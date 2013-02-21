@@ -37,7 +37,7 @@ This is Hello World by HTML
 <button type="button" id="butty">Press me</button>
 
 <br />
-<button type="button" id="Tweety">Tweetify me</button>
+<button type="button" id="tweety">Tweetify me</button>
 
 <script type="text/javascript">
 $(butty).click(send_hello)
