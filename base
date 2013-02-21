@@ -2,6 +2,7 @@
  
 <script type="text/javascript">
 function get_tweets(){
+$("#msg_div").html("get_tweets() successfully called");
 $(document).ready(function(){
 $.ajax({
   dataType: "json",
