@@ -1,7 +1,7 @@
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
  
 <script type="text/javascript">
-
+function get_tweets(){
 $(document).ready(function(){
 $.ajax({
   dataType: "json",
@@ -13,6 +13,7 @@ send_tweet_hello();
 }
 });
 });
+} // end of get_tweets
 
 // @@ end
  function send_hello(){
