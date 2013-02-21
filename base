@@ -34,11 +34,13 @@ This is Hello World by HTML
 <div id="msg_div">
 </div>
 <button type="button" id="butty">Press me</button>
-
 <br />
 <button type="button" id="tweety">Tweetify me</button>
+<br />
+<button type="button" id="testy">Testify me</button>
 
 <script type="text/javascript">
 $(butty).click(send_hello)
 $(tweety).click(send_tweet_hello)
+$(testy).click(get_tweets)
 </script>
