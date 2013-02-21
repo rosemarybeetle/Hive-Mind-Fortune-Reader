@@ -36,6 +36,10 @@ This is Hello World by HTML
 </div>
 <button type="button" id="butty">Press me</button>
 
+<br />
+<button type="button" id="Tweety">Tweetify me</button>
+
 <script type="text/javascript">
 $(butty).click(send_hello)
+$(tweety).click(send_tweet_hello)
 </script>
