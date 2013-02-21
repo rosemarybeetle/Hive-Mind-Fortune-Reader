@@ -1,4 +1,4 @@
 tweetifier
 ==========
 
-Attempto jquery out tweets
+Attemp to jquery out tweets
