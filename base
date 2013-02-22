@@ -5,9 +5,19 @@ function get_tweets(){
 $(document).ready(function(){
 $("#msg_div").html("get_tweets() successfully called");
 
-  alert('Load was performed.');
-
-
+alert("Load was performed.");
+//@
+/*
+       
+        $.getJSON(
+            'http://api.twitter.com/1/users/show.json?screen_name=' + FindUser + '.json?callback=?', 
+            function(json) {
+                $("#msg_div").html("
+            }
+        );
+    }
+);*/
+//@
 
 });
 
