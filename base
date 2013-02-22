@@ -3,31 +3,21 @@
 <script type="text/javascript">
 function get_tweets(){
 $(document).ready(function(){
-$("#msg_div").html("get_tweets() successfully called");
+$("#msg_div_tweet").html("get_tweets() successfully called");
 
 alert("Load was performed.");
 //@
-$.getJSON('http://search.twitter.com/search.json?q=%23museumnext', function(data) {
+$.getJSON("http://search.twitter.com/search.json?q=%23museumnext", function(data) {
   var items = [];
  
   $.each(data, function(key, val) {
-    items.push('<li id="' + key + '">' + val + '</li>');
+    $("#msg_div").html("<li id='" + key + "'>" + val + "</li>");
   });
  
-  $('<ul/>', {
-    'class': 'my-new-list',
-    html: items.join('')
-  }).appendTo('body');
+ 
 });  
 
-        $.getJSON(
-            'http://api.twitter.com/1/users/show.json?screen_name=' + FindUser + '.json?callback=?', 
-            function(json) {
-                $("#msg_div").html("
-            }
-        );
-    }
-);
+      
 //@
 
 });
@@ -49,6 +39,9 @@ $(document).ready(function(){
 </script>
 
 <div id="msg_div">
+</div>
+<div style="float: right;" id="msg_div_tweet">
+
 </div>
 <button type="button" id="butty">Press me</button>
 <br />
