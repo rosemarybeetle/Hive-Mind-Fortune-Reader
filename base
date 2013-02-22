@@ -5,10 +5,8 @@ function get_tweets(){
 $(document).ready(function(){
 $("#msg_div").html("get_tweets() successfully called");
 
-$.get("search.twitter.com/search.json?q=%23MuseumNext", function(data) {
-  $(".result").html(data);
   alert('Load was performed.');
-});
+
 
 
 });
