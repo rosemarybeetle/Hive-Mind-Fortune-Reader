@@ -5,22 +5,17 @@ function get_tweets(){
 $(document).ready(function(){
 $("#msg_div_tweet").html("get_tweets() successfully called");
 
-alert("Load was performed.");
-//@
-$.getJSON("http://search.twitter.com/search.json?q=%23museumnext", function(data) {
-  var items = [];
+//alert("Load was performed.");
+//@@@@@@@@@@@@@@@@@@
+$.get("http://search.twitter.com/search.json?q=%23museumnext", function(data) {
+  alert("success");
  
-  $.each(data, function(key, val) {
-    $("#msg_div").html("<li id='" + key + "'>" + val + "</li>");
-  });
- 
- 
-});  
+ });  // end - get
 
       
-//@
+//@@@@@@@@@@@@@@@@@@
 
-});
+}); // end - document ready
 
 } // end of get_tweets
 
@@ -41,7 +36,6 @@ $(document).ready(function(){
 <div id="msg_div">
 </div>
 <div style="float: right;" id="msg_div_tweet">
-
 </div>
 <button type="button" id="butty">Press me</button>
 <br />
