@@ -29,9 +29,7 @@ $(document).ready(function(){
 } // end of function
  
 </script>
- 
-This is Hello World by HTML
- 
+
 <div id="msg_div">
 </div>
 <button type="button" id="butty">Press me</button>
