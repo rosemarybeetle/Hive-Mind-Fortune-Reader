@@ -5,16 +5,14 @@ function get_tweets(){
 $(document).ready(function(){
 $("#msg_div").html("get_tweets() successfully called");
 
-$.ajax({
-  dataType: "json",
-  url: "http://search.twitter.com/search.json?q=%23MuseumNext",
-  data: "{}",
-  success: function(data){
-alert(data);
-send_tweet_hello();
-}
+$.get("search.twitter.com/search.json?q=%23MuseumNext", function(data) {
+  $(".result").html(data);
+  alert('Load was performed.');
 });
-});
+
+// @@
+
+
 } // end of get_tweets
 
 // @@ end
