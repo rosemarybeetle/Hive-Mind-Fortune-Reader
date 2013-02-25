@@ -7,8 +7,9 @@ $("#msg_div_tweet").html("get_tweets() successfully called");
 
 //alert("Load was performed.");
 //@@@@@@@@@@@@@@@@@@
-$.get("http://search.twitter.com/search.json?q=%23museumnext", function(data) {
-  alert("success");
+$.get("search.twitter.com/search.json?q=%23museumnext", function(data) {
+
+alert("success");
  
  });  // end - get
 
