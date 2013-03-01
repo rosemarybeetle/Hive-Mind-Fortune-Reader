@@ -2,6 +2,12 @@
  
 <script type="text/javascript">
 function get_tweets(){
+// ajax error handling
+$(document).ajaxError(function() {
+  $( "div.log" ).text( "Triggered ajaxError handler." );
+});
+
+
 $(document).ready(function(){
 $("#msg_div_tweet").html("get_tweets() successfully called");
 
@@ -49,3 +55,8 @@ $(butty).click(send_hello)
 $(tweety).click(send_tweet_hello)
 $(testy).click(get_tweets)
 </script>
+
+@@@@@@@@@@
+
+<div class="result"></div>
+<div class="log"></div>
