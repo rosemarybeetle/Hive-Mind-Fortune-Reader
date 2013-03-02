@@ -51,36 +51,42 @@ $.getJSON("http://search.twitter.com/search.json?q=%23museumnext", function(data
 } // end of get_tweets
 
 // @@ end
+// @@@@@@@@@@  function @@@@@@@>>>>>>>>>>>>>>>>>
+
  function send_hello(){
 $(document).ready(function(){
  $("#msg_div").html("This is Hello World by JQuery");
 });
-} // end of function
+}  // @@@@@@@@@@  end of function @@@@@@<<<<<<<<<
 
 function send_tweet_hello(){
 
 //http://www.vam.ac.uk/api/json/museumobject/
+
 $(document).ready(function(){
  $("#msg_div").html("Tweets received");
 });
-} // end of function
- </script>
-<script>
+} // @@@@@@@@@@  end of function @@@@@@<<<<<<<<<
+
+// @@@@@@@@@@  function @@@@@@@>>>>>>>>>>>>>>>>>
 $(document).ready(function(){
-  $("button").click(function(){
+  $(jsony).click(function(){
     $.getJSON("demo_ajax_json.js",function(result){
       $.each(result, function(i, field){
         $("div").append(field + " ");
       });
     });
   });
-});
-</script>
+});// @@@@@@@@@@  end of function @@@@@@<<<<<<<<<
 
+</script>
+<!-- @@@@@@@@@@@@  print divs @@@@@@@@-->
 <div id="msg_div">
 </div>
 <div style="float: right;" id="msg_div_tweet">
 </div>
+
+<!-- @@@@@@@@@@@@  print buttons @@@@@@@@-->
 <button type="button" id="butty">Press me</button>
 <br />
 <button type="button" id="tweety">Tweetify me</button>
@@ -96,7 +102,7 @@ $(testy).click(get_tweets)
 </script>
 
 @@@@@@@@@@
-
+<!-- @@@@@@@@@@@@  print more divs @@@@@@@@-->
 <div class="result"></div>
 <div class="log"></div>
 <div class="log2"></div>
