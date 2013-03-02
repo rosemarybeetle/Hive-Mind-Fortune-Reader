@@ -1,4 +1,23 @@
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<!DOCTYPE html>
+<html>
+<head>
+
+</head>
+<body>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js">
+
+<script>
+$(document).ready(function(){
+  $("button").click(function(){
+    $.getJSON("demo_ajax_json.js",function(result){
+      $.each(result, function(i, field){
+        $("div").append(field + " ");
+      });
+    });
+  });
+});
+</script>
+</script>
  
 <script type="text/javascript">
 function get_tweets(){
@@ -11,6 +30,8 @@ $(document).ajaxError(function() {
   $( "div.log2" ).text( "Triggered ajaxError handler." );
 });
 
+
+//
 
 $(document).ready(function(){
 $("#msg_div_tweet").html("get_tweets() successfully called");
@@ -43,7 +64,17 @@ $(document).ready(function(){
  $("#msg_div").html("Tweets received");
 });
 } // end of function
- 
+ </script>
+<script>
+$(document).ready(function(){
+  $("button").click(function(){
+    $.getJSON("demo_ajax_json.js",function(result){
+      $.each(result, function(i, field){
+        $("div").append(field + " ");
+      });
+    });
+  });
+});
 </script>
 
 <div id="msg_div">
@@ -55,6 +86,8 @@ $(document).ready(function(){
 <button type="button" id="tweety">Tweetify me</button>
 <br />
 <button type="button" id="testy">Testify me</button>
+<br />
+<button type="button" id="jsony">Get JSON data</button>
 
 <script type="text/javascript">
 $(butty).click(send_hello)
@@ -67,3 +100,8 @@ $(testy).click(get_tweets)
 <div class="result"></div>
 <div class="log"></div>
 <div class="log2"></div>
+
+<div></div>
+
+</body>
+</html>
