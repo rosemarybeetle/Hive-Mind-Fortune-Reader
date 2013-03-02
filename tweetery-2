@@ -1,0 +1,106 @@
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js">
+
+<script>
+$(document).ready(function(){
+  $("button").click(function(){
+    $.getJSON("http://www.w3schools.com/jquery/demo_ajax_json.js",function(result){
+      $.each(result, function(i, field){
+        $("div").append(field + " ");
+      });
+    });
+  });
+});
+
+</script>
+ 
+<script type="text/javascript">
+function get_tweets(){
+
+$(document).ajaxStart(function() {
+  $( "div.log" ).text( "Triggered ajaxStart handler." );
+});
+// ajax error handling
+$(document).ajaxError(function(thrownError) {
+  $( "div.log2" ).text( "Triggered ajaxError handler. "+thrownError);
+});
+
+
+//
+
+$(document).ready(function(){
+$("#msg_div_tweet").html("get_tweets() successfully called");
+
+//alert("Load was performed.");
+//@@@@@@@@@@@@@@@@@@
+
+$.getJSON("http://search.twitter.com/search.json?q=%23museumnext", function(data) {
+
+ });  // end - get
+
+      
+//@@@@@@@@@@@@@@@@@@
+
+}); // end - document ready
+
+} // end of get_tweets
+
+// @@ end
+// @@@@@@@@@@  function @@@@@@@>>>>>>>>>>>>>>>>>
+
+ function send_hello(){
+$(document).ready(function(){
+ $("#msg_div").html("This is Hello World by JQuery");
+});
+}  // @@@@@@@@@@  end of function @@@@@@<<<<<<<<<
+
+function send_tweet_hello(){
+
+//http://www.vam.ac.uk/api/json/museumobject/
+
+$(document).ready(function(){
+ $("#msg_div").html("Tweets received");
+});
+} // @@@@@@@@@@  end of function @@@@@@<<<<<<<<<
+
+// @@@@@@@@@@  function @@@@@@@>>>>>>>>>>>>>>>>>
+$(document).ready(function(){
+  $(jsony).click(function(){
+    $.getJSON("demo_ajax_json.js",function(result){
+$("div").append("Results: <br />");
+      $.each(result, function(i, field){
+        $("div").append(field + "<br /> ");
+      });
+    });
+  });
+});// @@@@@@@@@@  end of function @@@@@@<<<<<<<<<
+
+</script>
+</script>
+<!-- @@@@@@@@@@@@  print divs @@@@@@@@-->
+<div id="msg_div">
+</div>
+<div style="float: right;" id="msg_div_tweet">
+</div>
+
+<!-- @@@@@@@@@@@@  print buttons @@@@@@@@-->
+<button type="button" id="butty">Press me</button>
+<br />
+<button type="button" id="tweety">Tweetify me</button>
+<br />
+<button type="button" id="testy">Testify me</button>
+<br />
+<button type="button" id="jsony">Get JSON data</button>
+
+<script type="text/javascript">
+$(butty).click(send_hello)
+$(tweety).click(send_tweet_hello)
+$(testy).click(get_tweets)
+</script>
+
+@@@@@@@@@@
+<!-- @@@@@@@@@@@@  print more divs @@@@@@@@-->
+<div class="result" ></div>
+<div class="log"></div>
+<div class="log2"></div>
+
+<div></div>
