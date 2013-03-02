@@ -17,10 +17,9 @@ $("#msg_div_tweet").html("get_tweets() successfully called");
 
 //alert("Load was performed.");
 //@@@@@@@@@@@@@@@@@@
-$.get("http://search.twitter.com/search.json?q=%23museumnext", function(data) {
 
-alert("success");
- 
+$.getJSON("http://search.twitter.com/search.json?q=%23museumnext", function(data) {
+
  });  // end - get
 
       
@@ -36,7 +35,10 @@ $(document).ready(function(){
  $("#msg_div").html("This is Hello World by JQuery");
 });
 } // end of function
+
 function send_tweet_hello(){
+
+//http://www.vam.ac.uk/api/json/museumobject/
 $(document).ready(function(){
  $("#msg_div").html("Tweets received");
 });
