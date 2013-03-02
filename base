@@ -26,8 +26,8 @@ $(document).ajaxStart(function() {
   $( "div.log" ).text( "Triggered ajaxStart handler." );
 });
 // ajax error handling
-$(document).ajaxError(function() {
-  $( "div.log2" ).text( "Triggered ajaxError handler." );
+$(document).ajaxError(function(thrownError) {
+  $( "div.log2" ).text( "Triggered ajaxError handler. "+thrownError);
 });
 
 
@@ -103,7 +103,7 @@ $(testy).click(get_tweets)
 
 @@@@@@@@@@
 <!-- @@@@@@@@@@@@  print more divs @@@@@@@@-->
-<div class="result"></div>
+<div class="result" ></div>
 <div class="log"></div>
 <div class="log2"></div>
 
