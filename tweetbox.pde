@@ -1,18 +1,19 @@
 /*
 
- alewis
- [11/08/2012] based on virtual_twitr_janus_2 
- [12/08/2012] virtual_twitr_janus_11 - this version is trying to do serial to twitr_janus_arduino.ino on the board
- [02/10/2012] virtual_twitr_janus_13 - this version is sending coded data from Google, separate to coded data from Twitter to allow individual LED to light 
-                                       it is also trying to make google codes performa a preset range of eyball positions
- [06/10/2012] virtual_twitr_janus_15 - trying to get rid of what I believe is a timing bug. I am trying to use noLoop to stop polling during execution of functions after receiving data 
-   */
+ alewis cc-zero licence
+ [06/10/2012] virtual_twitr_janus_15 - Starting point for this sketch
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 import processing.serial.*;
 import guru.ttslib.*; // NB this also needs to be loaded (available from http://www.local-guru.net/projects/ttslib/ttslib-0.3.zip)
 Serial port;
 TTS tts;
-// @@@@@@@@@@@@@@@@ NOT USED IN hashtag_avatar @@ >>>>>>>>>>>>>
+
+// ---------------------------------------------------
+// ---------------------------------------------------
+// ---------------------------------------------------
+// ---------------------------------------------------
+// ---------------------------------------------------
+// @@@@@@@@@@@@@@@@ BETWEEN FIVE LINE BARS, CODE NOT USED IN hashtag_avatar @@ >>>>>>>>>>>>>
 // this is setting up fill colours for Processing display
 color off = color(4, 79, 111);
 color on = color(84, 145, 158);
@@ -20,44 +21,20 @@ color on = color(84, 145, 158);
 // initialise variables
 
 int gssEyeballUpDown=0; // will be used store data to use for eyeball servo
-int gssEyeballLeftRight=0; // will be used store data to use for eyeball servo
-// @@@@@@@@@@@@@@@@ NOT USED IN hashtag_avatar @@ <<<<<<<<<<<<
-
-
-// @@@@@@@@@@ Googlespreadsheet variables
-String gssText="initialised"; // will be used store data to use for eyeball servo
-String gssTextCheck = gssText;
-int gssTextLength = 0; // initialise text length for reading from Google Spreadsheet
-int gssTimer=0; // used to reset timer for Google spreadsheet calls
-int gssPeriod = 2500; // interval between checks on google spreadsheet
-//String gssApiString = "https://docs.google.com/spreadsheet/tq?key=0AgTXh43j7oFVdDJSaHU1ejFqdVRTZU1ZZ1Fabmt2UXc&range=E2%3AG2&headers=0";
-String gssApiString = "https://spreadsheets.google.com/feeds/list/0AgTXh43j7oFVdFZJdklXTU1lTzY5U25sc3BJNjRLRUE/od6/public/basic?alt=rss";
-// @@@@@@@@@@ Googlespreadsheet end
-
-int value=10; // what is this?
-int thresholdAnalogIn=80;
+int gssEyeballLeftRight=0; // will be used store data to use for eyeball servoint thresholdAnalogIn=80;
 int peakPin = 2;
 int valueAnalogIn =0;
 int analogInput = 0;
 int count=0;
 int countStop=40;
 int movex=0;
-float portTimer=0;
 float portPeriod=10000;
+float portTimer=0;
+int value=10; // what is this?
 float f = random(260000);
-int currentM = millis(); // used to store sets current time since app launched in milliseconds
-int timer = 0; // a timer variable to compare it with to see if a fixed period is over
-int period =29000; // this is the interval between checks made for new tweets
 int bk =int(f);
 int spacer=35;
 int rectHeight=0;
-String tweetText = "initialised";
-String tweetCheck = tweetText;
-int tweetLength = 0; // used to measure length of incoming tweet
-String twitterUsername = "twitr_janus";
-
-
-// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 
 int eyeVinit = 200;// Vertical common start position
@@ -138,6 +115,7 @@ float teethSpacer=(eyeHRinit - eyeHLinit)/teethNum;
 //mouth initialisation
 color mouthColour = color (245, 0, 0);
 
+
 int chompFactor = 3; // this is to scale down the length of the received data 
 int chompDelay = 50; // gap between chomps up and chomps down in milliseconds
 int chompRand = 100;
@@ -157,8 +135,38 @@ int lipTimer = 300;
 int lipOpenTimer = 1500; // lip opening time in milliseconds
 
 
+//  <<<<<<@@@@@@@@@@@@@@@@ END OF: NOT (OR NOT YET) USED IN hashtag_avatar <<<<<<<<<<<<
+// ---------------------------------------------------
+// ---------------------------------------------------
+// ---------------------------------------------------
+// ---------------------------------------------------
+// ---------------------------------------------------
 
-// ----------------------
+
+// @@@@@@@@@@ Googlespreadsheet variables
+String gssText="initialised"; // will be used store data to use for eyeball servo
+String gssTextCheck = gssText;
+int gssTextLength = 0; // initialise text length for reading from Google Spreadsheet
+int gssTimer=0; // used to reset timer for Google spreadsheet calls
+int gssPeriod = 2500; // interval between checks on google spreadsheet
+//String gssApiString = "https://docs.google.com/spreadsheet/tq?key=0AgTXh43j7oFVdDJSaHU1ejFqdVRTZU1ZZ1Fabmt2UXc&range=E2%3AG2&headers=0";
+String gssApiString = "https://spreadsheets.google.com/feeds/list/0AgTXh43j7oFVdFZJdklXTU1lTzY5U25sc3BJNjRLRUE/od6/public/basic?alt=rss";
+// @@@@@@@@@@ Googlespreadsheet end
+
+// ---------------------------------------------------------------------------------------------
+
+// @@@@@@@@@@ Twitter checking or initialising variables 
+int currentM = millis(); // used to store sets current time since app launched in milliseconds
+int timer = 0; // a timer variable to compare it with to see if a fixed period is over
+int period =29000; // this is the interval between checks made for new tweets
+String tweetText = "initialised";
+String tweetCheck = tweetText;
+int tweetLength = 0; // used to measure length of incoming tweet
+String twitterUsername = "twitr_janus";
+// @@@@@@@@@@ Twitter end
+
+// ---------------------------------------------------------------------------------------------
+
 
 void setup ()
 {
