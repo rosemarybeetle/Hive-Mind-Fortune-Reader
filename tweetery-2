@@ -65,9 +65,10 @@ $(document).ready(function(){
 // @@@@@@@@@@  function @@@@@@@>>>>>>>>>>>>>>>>>
 $(document).ready(function(){
   $(jsony).click(function(){
-    $.getJSON("http://www.w3schools.com/jquery/demo_ajax_json.js",function(result){
+    $.getJSON("demo_ajax_json.js",function(result){
+$("div").append("Results: <br />");
       $.each(result, function(i, field){
-        $("div").append(field + " ");
+        $("div").append(field + "<br /> ");
       });
     });
   });
