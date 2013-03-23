@@ -2,7 +2,9 @@
 
  alewis cc-zero licence
  [06/10/2012] virtual_twitr_janus_15 - Starting point for this sketch
+ [22/3/2012] tweetbox_2 - cleaned out redundant code
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
 */
 import processing.serial.*;
 import guru.ttslib.*; // NB this also needs to be loaded (available from http://www.local-guru.net/projects/ttslib/ttslib-0.3.zip)
