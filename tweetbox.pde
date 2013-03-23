@@ -15,6 +15,8 @@ TTS tts;
 // ---------------------------------------------------
 // ---------------------------------------------------
 // @@@@@@@@@@@@@@@@ BETWEEN FIVE LINE BARS, CODE NOT USED IN hashtag_avatar @@ >>>>>>>>>>>>>
+int count=0;
+int countStop=40;
 color faceColour = color (255, 240, 240);
 color off = color(4, 79, 111);
 color on = color(84, 145, 158);
