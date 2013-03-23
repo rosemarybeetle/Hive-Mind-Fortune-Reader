@@ -51,6 +51,8 @@ String tweetText = "initialised";
 String tweetCheck = tweetText;
 int tweetLength = 0; // used to measure length of incoming tweet
 String twitterUsername = "twitr_janus";
+ String hashtag="museweb"; // change this as required
+ 
 // @@@@@@@@@@ Twitter end
 
 // ---------------------------------------------------------------------------------------------
@@ -112,7 +114,6 @@ void drawBox() {
 }
 void getTweet ()
 {
-  String hashtag="bits2blogs"; // change this as required
   // uses Twitter API to get public tweets from username (sent in function argument)
 
   tweetCheck = tweetText;
