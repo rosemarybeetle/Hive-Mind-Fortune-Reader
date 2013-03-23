@@ -15,6 +15,11 @@ TTS tts;
 // ---------------------------------------------------
 // ---------------------------------------------------
 // @@@@@@@@@@@@@@@@ BETWEEN FIVE LINE BARS, CODE NOT USED IN hashtag_avatar @@ >>>>>>>>>>>>>
+float f = random(260000);
+int bk =int(f);
+int spacer=35;
+int rectHeight=0;
+int movex=0;
 int count=0;
 int countStop=40;
 color faceColour = color (255, 240, 240);
@@ -35,7 +40,7 @@ int chompRand = 100;
 
 
 // @@@@@@@@@@ Googlespreadsheet variables
-String gssText="initialised"; // will be used store data to use for eyeball servo
+String gssText="initialised"; // will be used store data to use for eye ball servo
 String gssTextCheck = gssText;
 int gssTextLength = 0; // initialise text length for reading from Google Spreadsheet
 int gssTimer=0; // used to reset timer for Google spreadsheet calls
@@ -199,17 +204,7 @@ void getGssData ()
   gssTextLength= gssText.length();
   // @@@@@@@@@@@@@@@@
   String [] texty4 = split (texty2[2], ',');
-  gssEyeballUpDown = int (texty4 [0]);
-  print ("gssEyeballUpDown = ");
-  println (gssEyeballUpDown);
-  println ();
-  // @@@@@@@@@@@@@@@@
-  String [] texty5 = split (texty2[3], ',');
-  gssEyeballLeftRight = int (texty5 [0]);
-  print ("gssEyeballLeftRight = ");
-  println (gssEyeballLeftRight);
-  println ();
-
+ 
   // @@@@@@@@@@@@@@@@
   println ();
   print ("gssText = ");
@@ -231,7 +226,7 @@ void getGssData ()
     println ("");
     print (gssTextCheck);
     println ("@");
-    port.write(gssEyeballUpDown);// send up down value to board
+    //port.write(gssEyeballUpDown);// send up down value to board
     tts.speak(gssText);
   loop();
     // }
@@ -240,312 +235,3 @@ void getGssData ()
 }// end gssTextCheck;
 
 // ------------------------------------------
-void keyPressed() {
-  // @@@@@@@@@@@@@@@@
-  // these lines will be superceded by data from the Internet
-  if (keyCode==49) {
-    println (" key 1 pressed ");
-    eyeHLT-=inc;
-    eyeHRT-=inc;
-
-    println ("eyeHLT = "+eyeHLT);
-    println ("eyeHRT = "+eyeHRT);
-  }
-  if (keyCode==50) {
-    println (" key 2 pressed ");
-    eyeHLT+=inc;
-    eyeHRT+=inc;
-
-    println ("eyeHLT = "+eyeHLT);
-    println ("eyeHRT = "+eyeHRT);
-  }
-
-  if (keyCode==57) {
-    println (" key 9 pressed ");
-    eyeVLT+=inc;
-    eyeVRT+=inc;
-  }
-  if (keyCode==48) {
-    println (" key 0 pressed ");
-    eyeVRT-=inc;
-    eyeVLT-=inc;
-  } 
-  // @@@@@@@@@@@@@@@@
-  checkEyePos2();
-}// end ifKeyPressed()
-
-// @@@@@@@@@@@@@@@@@@@@@@@@@@@
-void checkEyePos()
-{
-  checkH = eyeHLinit-eyeHL; //calculate if horizontal eye position has reached limit
-  checkV = eyeVinit-eyeVL;
-  checkHP = eyeHLinit-pupilHL; //calculate if horizontal pupil position has reached limit
-  checkVP = eyeVinit-pupilVL;
-  if ((checkH <0)) {
-    negFactorH=-1;
-  } 
-  else if ((checkH >=0)) { 
-    negFactorH=1;
-  }
-  if ((checkV <0)) {
-    negFactorV=-1;
-  } 
-  else if ((checkV >=0)) { 
-    negFactorV=1;
-  }
-  if ((checkHP <0)) {
-    negFactorHP=-1;
-  } 
-  else if ((checkHP >=0)) { 
-    negFactorHP=1;
-  }
-  if ((checkVP <0)) {
-    negFactorVP=-1;
-  } 
-  else if ((checkVP >=0)) { 
-    negFactorVP=1;
-  }
-  int checkZH = int (negFactorH*sqrt(sq(checkH)+sq(checkV)));
-  int checkZV = int (negFactorV*sqrt(sq(checkH)+sq(checkV)));
-  int checkZHP = int (negFactorHP*sqrt(sq(checkHP)+sq(checkVP)));
-  int checkZVP = int (negFactorVP*sqrt(sq(checkHP)+sq(checkVP)));
-
-  //if (key == CODED) 
-  //{
-  if (eyeHLT==1)
-  {
-
-    if (checkZH <(eyeDiameter/4)) {
-      eyeHL-= inc; 
-      eyeHR-= inc;
-      println("EEK - eyeHL = "+eyeHL);
-    }
-    if (checkZHP <(eyeDiameter/4+(irisD/4))) {
-
-      pupilHL-= incPupil;
-      pupilHR-= incPupil;
-    }
-  } 
-  else if (eyeHLT==3)
-  {
-    if (checkZH >=(-eyeDiameter/4)) {
-
-      eyeHL+= inc; 
-      eyeHR+= inc;
-      println("EEK - eyeHL = "+eyeHL);
-    }
-    if (checkZHP >=(-eyeDiameter/4-(irisD/4))) {
-
-      pupilHL += incPupil; 
-      pupilHR += incPupil;
-    }
-  }
-  if (eyeVLT==8)
-  {
-    if (checkZV <((eyeDiameter/4))) {
-
-      eyeVL-=inc; 
-      eyeVR-=inc;
-      println("EEK - eyeVL = "+eyeVL);
-    }
-
-    if (checkZVP <(eyeDiameter/4+(irisD/4))) {
-
-      pupilVL-= incPupil; 
-      pupilVR -= incPupil;
-    }
-  }
-
-
-  else if (eyeVLT==0)
-  {
-    if (checkZV >=(-eyeDiameter/4)) {
-
-      eyeVL+=inc; 
-      eyeVR+=inc;
-      println("EEK - eyeVL = "+eyeVL);
-    }
-    if (checkZVP >=(-eyeDiameter/4-(irisD/4))) {
-
-      pupilVL += incPupil; 
-      pupilVR += incPupil;
-    }
-  } // end DOWN
-  //}// end hey==coded
-}// end checkEyePos ()
-
-// -----------------------
-
-void checkEyePos2()
-{
-  checkH = eyeHLinit-eyeHL; //calculate if horizontal eye position has reached limit
-  checkV = eyeVinit-eyeVL;
-  checkHP = eyeHLinit-pupilHL; //calculate if horizontal pupil position has reached limit
-  checkVP = eyeVinit-pupilVL;
-  if ((checkH <0)) {
-    negFactorH=-1;
-  } 
-  else if ((checkH >=0)) { 
-    negFactorH=1;
-  }
-  if ((checkV <0)) {
-    negFactorV=-1;
-  } 
-  else if ((checkV >=0)) { 
-    negFactorV=1;
-  }
-  if ((checkHP <0)) {
-    negFactorHP=-1;
-  } 
-  else if ((checkHP >=0)) { 
-    negFactorHP=1;
-  }
-  if ((checkVP <0)) {
-    negFactorVP=-1;
-  } 
-  else if ((checkVP >=0)) { 
-    negFactorVP=1;
-  }
-  int checkZH = int (negFactorH*sqrt(sq(checkH)+sq(checkV)));
-  int checkZV = int (negFactorV*sqrt(sq(checkH)+sq(checkV)));
-  int checkZHP = int (negFactorHP*sqrt(sq(checkHP)+sq(checkVP)));
-  int checkZVP = int (negFactorVP*sqrt(sq(checkHP)+sq(checkVP)));
-
-  //if (key == CODED) 
-  //{
-  if (eyeHLT<eyeHL)
-  {
-
-    eyeHL-= inc; 
-    eyeHR-= inc;
-    println("EEK - eyeHL = "+eyeHL);
-  }
-
-  if (eyeHLT>eyeHL) {
-
-    eyeHL+= inc; 
-    eyeHR+= inc;
-    println("EEK - eyeHL = "+eyeHL);
-  }
-
-  if (eyeVLT<eyeVL)
-  {
-    eyeVL-=inc; 
-    eyeVR-=inc;
-    println("EEK - eyeVL = "+eyeVL);
-  }
-
-  if (eyeVLT>eyeVL) {
-    eyeVL+=inc; 
-    eyeVR+=inc;
-    println("EEK - eyeVL = "+eyeVL);
-  } // end DOWN
-  //}// end hey==coded
-}// end checkEyePos ()
-
-//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-
-void drawEyes ()
-{
-  drawHead();
-  fill (0, 0, 255);
-
-  ellipse (eyeHL, eyeVL, irisD, irisD);
-  ellipse (eyeHR, eyeVR, irisD, irisD);
-  fill (0, 0, 0);
-  // use these if you want the pupils to move more realistically for 2d rendering
-  //ellipse (pupilHR, pupilVR, pupilD, pupilD);
-  //ellipse (pupilHL, pupilVL, pupilD, pupilD);
-  // use these if you want pupils to move exactly with the iris (less realistic) 
-  //ellipse (eyeHL, eyeVL, pupilD, pupilD);
-  //ellipse (eyeHR, eyeVR, pupilD, pupilD);
-}
-void drawMouth ()
-{
-  fill (mouthColour);
-  rect (lipUH, lipUV, lipWidth, lipHeight);
-  rect (lipLH, lipLV, lipWidth, lipHeight);
-  
-  lipUV=lipUVshut;
-  lipLV=lipLVshut;
-  println ("shut");
-  println ("lipUV = "+lipUV);
-  println ("lipLVshut= "+lipLVshut);
-  //drawEyes();
-
-}
-void drawHead () {
-  //draw left eye
-  background (faceColour);
-  fill (eyeColor);
-  ellipse (eyeHLinit, eyeVinit, eyeWidth, eyeHeight);
-  //draw right eye
-  ellipse (eyeHRinit, eyeVinit, eyeWidth, eyeHeight);
-  // draw teeth
-  for (int i=0; i<teethNum; i++) {
-    rect (teethHLinit+(i*teethSpacer), teethVL, teethWidth, teethHeight);
-  }
-  drawMouth();
-}
-void updateEyeTargetPosition ()
-{
-  /*// first check it is not out of limits (that is, must be in Arduino range 0 - 180, the standard servo control range)
-   if (gssEyeballUpDown<0)
-   {
-   gssEyeballUpDown = 0;
-   } 
-   else if (gssEyeballUpDown>180)
-   {
-   gssEyeballUpDown=180;
-   }
-   if (gssEyeballLeftRight<0)
-   {
-   gssEyeballLeftRight = 0;
-   } 
-   else if (gssEyeballLeftRight>180)
-   {
-   gssEyeballLeftRight=180;
-   }
-   */
-  // map 
-
-  // map(gssEyeballLeftRight, 0, 180, eyeHLmin, eyeHLmax);
-  // map(gssEyeballUpDown, 0, 180, eyeVLmin, eyeVLmax);
-  gssEyeballLeftRight = int (gssEyeballLeftRight);
-  gssEyeballUpDown = int (gssEyeballUpDown);
-  eyeHLT=gssEyeballLeftRight;
-  eyeVLT=gssEyeballUpDown;
-
-  println ("Inside updateEyeTargetPosition.");
-  println ("gssEyeballLeftRight = "+gssEyeballLeftRight);
-  println ("gssEyeballUpDown = "+gssEyeballUpDown);
-  println("-----------");
-  println ("eyeHL = "+eyeHL);
-  println ("eyeHR = "+eyeHR);
-  println ("eyeVL = "+eyeVL);
-  println ("eyeVR = "+eyeVR);
-  println("-----------");
-  println ("eyeHLT = "+eyeHLT);
-  println ("eyeHRT = "+eyeHRT);
-  println ("eyeVLT = "+eyeVLT);
-  println ("eyeVRT = "+eyeVRT);
-  println("-----------");
-  println ("eyeHLmin = "+eyeHLmin+", , eyeHLmax= " +eyeHLmax);
-  println ("eyeVLmin = "+eyeVLmin+", , eyeHLmax= " +eyeVLmax);
-}
-void jawChomper () {
-  lipTimer = millis();
-
-
-  while ( (millis()- lipTimer) <lipOpenTimer) {
-    lipUV=lipUVopen;
-    lipLV=lipLVopen;
-    drawEyes();
-
-    println ("open");
-    println ("lipLV = "+lipLV);
-    println ("lipUV = "+lipUV);
-    println ("lipLVopen= "+lipLVopen);
-  } 
-
-}
