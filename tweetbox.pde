@@ -24,8 +24,8 @@ int rectHeight=0;
 int movex=0;
 int count=0;
 int countStop=40;
-color faceColour = color (255, 240, 240);
-color off = color(4, 79, 111);
+color faceColour = color (155, 240, 240);
+color off = color(47, 79, 111);
 color on = color(84, 145, 158);
 int chompFactor = 3; // this is to scale down the length of the received data 
 int chompDelay = 50; // gap between chomps up and chomps down in milliseconds
@@ -69,7 +69,7 @@ String twitterUsername = "twitr_janus";
 void setup ()
 {
   tts = new TTS();
-  size(50, 600);  
+  size(120,50);  
   background (faceColour);
   
   println(Serial.list());// display communication ports (use this in test to establish fee ports)
