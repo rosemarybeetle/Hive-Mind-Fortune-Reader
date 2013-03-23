@@ -135,7 +135,7 @@ void getTweet ()
   {
   tweetText +=texty3[i]; 
   }
-  println ("tweetText is loaded with the last tweet from Rosemarybeetle was: ");
+  println ("tweetText is loaded with the last tweet for hashtag '"+hashtag+"' was: ");
   //println (currentTweet);
   println (tweetText);
   println ();
