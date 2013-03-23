@@ -15,7 +15,8 @@ TTS tts;
 // ---------------------------------------------------
 // ---------------------------------------------------
 // @@@@@@@@@@@@@@@@ BETWEEN FIVE LINE BARS, CODE NOT USED IN hashtag_avatar @@ >>>>>>>>>>>>>
-
+color off = color(4, 79, 111);
+color on = color(84, 145, 158);
 int chompFactor = 3; // this is to scale down the length of the received data 
 int chompDelay = 50; // gap between chomps up and chomps down in milliseconds
 int chompRand = 100;
