@@ -15,125 +15,11 @@ TTS tts;
 // ---------------------------------------------------
 // ---------------------------------------------------
 // @@@@@@@@@@@@@@@@ BETWEEN FIVE LINE BARS, CODE NOT USED IN hashtag_avatar @@ >>>>>>>>>>>>>
-// this is setting up fill colours for Processing display
-color off = color(4, 79, 111);
-color on = color(84, 145, 158);
-
-// initialise variables
-
-int gssEyeballUpDown=0; // will be used store data to use for eyeball servo
-int gssEyeballLeftRight=0; // will be used store data to use for eyeball servoint thresholdAnalogIn=80;
-int peakPin = 2;
-int valueAnalogIn =0;
-int analogInput = 0;
-int count=0;
-int countStop=40;
-int movex=0;
-float portPeriod=10000;
-float portTimer=0;
-int value=10; // what is this?
-float f = random(260000);
-int bk =int(f);
-int spacer=35;
-int rectHeight=0;
-
-
-int eyeVinit = 200;// Vertical common start position
-int eyeHLinit = 150;
-int eyeHRinit = 450;
-
-//---------------------------
-// face
-color faceColour = color (255, 240, 240);
-
-// @@@@@@@@@@@ initialise left eye @@@@@@@@@@@
-int eyeHL = eyeHLinit;
-int eyeVL = eyeVinit;
-int pupilHL = eyeHLinit;
-int pupilVL = eyeVinit;
-// initialise right eye
-int eyeHR = eyeHRinit; 
-int eyeVR = eyeVinit;
-int pupilHR = eyeHRinit;
-int pupilVR = eyeVinit;
-
-// -----------------------------
-
-// initialise target positions
-int eyeHRT = eyeHR;
-int eyeHLT = eyeHL;
-int eyeVRT = eyeVR;
-int eyeVLT = eyeVL;
-
-// -----------------------------
-
-// initialise check digits
-int checkH = 0;  
-int checkV ;  
-int checkHP = 0;
-int checkVP = 0;
-int negFactorH=1;
-int negFactorV=1;
-int negFactorHP=1;
-int negFactorVP=1;
-int checkZH = 0;
-int checkZV = 0;
-int checkZHP = 0;
-int checkZVP = 0;
-
-// ----------------------
-
-
-int eyeDiameter = 200;
-int eyeWidth = eyeDiameter;
-int eyeHeight = eyeDiameter;
-int inc = 5; //eyeball movement increment
-float incPupil = 5;
-
-
-color eyeColor = color(255, 255, 255);
-color textColor = color (255, 255, 255);
-
-int irisD = 90; // define iris size
-int pupilD = 30;
-
-int eyeHLmin = eyeHLinit-((eyeWidth - irisD)/2);
-int eyeHLmax = eyeHLinit+((eyeWidth - irisD)/2);
-int eyeHRmin = eyeHRinit-((eyeWidth - irisD)/2);
-int eyeHRmax = eyeHRinit+((eyeWidth - irisD)/2);
-int eyeVLmin = eyeVinit-((eyeWidth - irisD)/2);
-int eyeVLmax = eyeVinit+((eyeWidth - irisD)/2);
-
-// ----------------------
-// teeth initialisation
-int teethWidth=25;
-int teethHeight=90;
-int teethHLinit= eyeHLinit+(teethWidth/2);
-int teethVL = 400;
-int teethNum=5;
-float teethSpacer=(eyeHRinit - eyeHLinit)/teethNum;
-
-//mouth initialisation
-color mouthColour = color (245, 0, 0);
-
 
 int chompFactor = 3; // this is to scale down the length of the received data 
 int chompDelay = 50; // gap between chomps up and chomps down in milliseconds
 int chompRand = 100;
 
-int lipWidth = (eyeHRinit-eyeHLinit);
-int lipHeight = 50 ;
-int lipUH = eyeHLinit;
-int lipUV = 400;
-int lipLH = lipUH;
-int lipLV = lipUV+lipHeight;
-int lipDiff=lipHeight/2;
-int lipUVshut = lipUV;
-int lipLVshut = lipLV;
-int lipUVopen = lipUV-lipDiff;
-int lipLVopen = lipLV+lipDiff;
-int lipTimer = 300;
-int lipOpenTimer = 1500; // lip opening time in milliseconds
 
 
 //  <<<<<<@@@@@@@@@@@@@@@@ END OF: NOT (OR NOT YET) USED IN hashtag_avatar <<<<<<<<<<<<
@@ -172,23 +58,18 @@ String twitterUsername = "twitr_janus";
 void setup ()
 {
   tts = new TTS();
-  size(600, 600);  
+  size(50, 600);  
   background (faceColour);
-  //fill (textColor);
+  
   println(Serial.list());// display communication ports (use this in test to establish fee ports)
-  //if (Serial.list()[2] != null){ // error handling for port death on PC
-    port = new Serial(this, Serial.list()[1], 115200); 
-  //}
+     port = new Serial(this, Serial.list()[1], 115200); 
   getGssData();
   getTweet();
-  drawHead ();
-  //
+   //
 }
 
 void draw ()
 {
-  //checkEyePos2();
-  drawEyes();
   currentM= millis();
   if (currentM-gssTimer > gssPeriod)
   {
