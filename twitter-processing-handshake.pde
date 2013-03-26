@@ -3,8 +3,8 @@
 // Credits - This was initially based on a Processing code example by Jer Thorp
 // From http://blog.blprnt.com/blog/blprnt/updated-quick-tutorial-processing-twitter
 // Awesome!
-// This opening example is polling Twitter for the term @rosemarybeetle
-// It also sends a 
+// This opening example sends a "Hello World" tweet
+// It is also polling Twitter for the term @rosemarybeetle and building a word cloud visualisation
 // ----
 // -----------------------
 //Build an ArrayList to hold all of the words that we get from the imported tweets
