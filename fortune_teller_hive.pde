@@ -37,6 +37,9 @@ controlP5.Textlabel lb;
 import guru.ttslib.*; // NB this also needs to be loaded (available from http://www.local-guru.net/projects/ttslib/ttslib-0.3.zip)
 TTS tts;
 
+import processing.serial.*;
+Serial port;
+
 //  ------------- needed to stop Twitter overpolling from within sendTweet
 float tweetTimer = 5000; // wait period (in milliseconds) after sending a tweet, before you can send the next one
 float delayCheck; //delayCheck; // THIS IS IMPORTANT. it i what stops overpollin g of the Twitte API
@@ -48,10 +51,14 @@ void setup() {
   size(550, 550);
   background(0);
   // now draw the admin panel
+  println(Serial.list());// display communication ports (use this in test to establish fee ports)
+  //if (Serial.list()[2] != null){ // error handling for port death on PC
+  port = new Serial(this, Serial.list()[2], 115200); 
+  //}
 
   //PFont font = createFont("arial",20);
   font = new ControlFont(createFont("arial", 100), 15);
-  
+
   // ------------------
   noStroke();
   cp5 = new ControlP5(this); // adds in a control instance to add buttons and text field to
@@ -74,13 +81,13 @@ void setup() {
   tfAlert.setPosition(150, 400);
   tfAlert.setSize(250, 25);
   tfAlert.setFont(font);
- 
+
   //tf.setAutoClear(true);
   tfAlert.setColor(color(255, 255, 255));
-    tfAlert.getCaptionLabel().align(ControlP5.CENTER, ControlP5.CENTER);
-    
+  tfAlert.getCaptionLabel().align(ControlP5.CENTER, ControlP5.CENTER);
+
   tfAlert.setText ("Reading the twitter hive mind");
-  
+
   //tfAlert.setVisible(false) 
   tfAlert.captionLabel().setControlFont(font);
 
@@ -110,7 +117,7 @@ void setup() {
   grabTweets();
   println ("finished grabbing tweets");
   println ();
-  }
+}
 
 void draw() {
   //Draw a faint black rectangle over what is currently on the stage so it fades over time.
@@ -128,8 +135,9 @@ void draw() {
   color c1 = color(70, 130, 180);
   fill (c1);
   rect(0, 400, 550, 150);
-  
+
   buttonCheck(tweetTextIntro);
+  checkSerial() ;
 }
 
 void sendTweet(String tweetText) {
@@ -202,7 +210,7 @@ void buttonCheck(String tweetTextIntro)
     if (timerB-delayCheck>=tweetTimer)
     {
       delayCheck=millis();
-      
+
       println("button being pressed");
       println("tfTextCurrent = "+ tfTextCurrent);
       String fortune = tweetTextIntro + tfTextCurrent+" username is user entered in form field!";
@@ -222,5 +230,12 @@ void buttonCheck(String tweetTextIntro)
       b.setWidth (250);
     } 
     //println("button NOT being pressed:  = "+(timerB-delayCheck));
+  }
+}
+
+void checkSerial() {
+  while (port.available() > 0) {
+    String inByte = port.readString();
+    println(inByte);
   }
 }
