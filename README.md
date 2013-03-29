@@ -11,3 +11,5 @@ Added Dev branch - this is the one I'm playing on.
 Master branch is now the current working live version. Dev changes once accepted at working can be merged back into Master
 
 Processing and Arduino code here both may use one or more external libraries. These need installing in Processing as libraries for the code to work.
+
+Also made DEV the default branch
