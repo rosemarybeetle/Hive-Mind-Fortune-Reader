@@ -21,7 +21,10 @@
 // -----
 
 String tweetTextIntro = "Hive fortune reading for ";
+String tweetTextOutro = ". thanks. ";
+
 String fortuneGreeting = "Hello. I have stared deep. into the hive. mind. Your fortune. reading. is."; 
+String tfTextCurrent =""; // used to check what is in the text box
 //Build an ArrayList to hold all of the words that we get from the imported tweets
 ArrayList<String> words = new ArrayList();
 
@@ -42,6 +45,7 @@ Serial port;
 
 //  ------------- needed to stop Twitter overpolling from within sendTweet
 float tweetTimer = 5000; // wait period (in milliseconds) after sending a tweet, before you can send the next one
+float timerT=millis(); // temporary timer for sendTweet
 float delayCheck; //delayCheck; // THIS IS IMPORTANT. it i what stops overpollin g of the Twitte API
 //  ---------------
 
@@ -135,30 +139,57 @@ void draw() {
   color c1 = color(70, 130, 180);
   fill (c1);
   rect(0, 400, 550, 150);
-
-  buttonCheck(tweetTextIntro);
-  checkSerial() ;
+  tfTextCurrent=tf.getText() ; //check the text box content every loop
+  buttonCheck(tfTextCurrent); // on screen check button every loop 
+  checkSerial() ; // check serial port every loop
 }
 
-void sendTweet(String tweetText) {
+void sendTweet (String tweetText) {
+  //@@@
+  timerT=millis();  // reset the timer each time
 
-  ConfigurationBuilder cb2 = new ConfigurationBuilder();
-  // ------- NB - the variables twitOAuthConsumerKey, etc. need to be in a 
-  // seperate 
-  cb2.setOAuthConsumerKey(twitOAuthConsumerKey);
-  cb2.setOAuthConsumerSecret(twitOAuthConsumerSecret);
-  cb2.setOAuthAccessToken(twitOAuthAccessToken);
-  cb2.setOAuthAccessTokenSecret(twitOAuthAccessTokenSecret);
 
-  Twitter twitter2 = new TwitterFactory(cb2.build()).getInstance();
+  if (timerT-delayCheck>=tweetTimer)
+    // this is needed to prevent sending multiple times rapidly to Twitter 
+    // which will be frowned upon!
+  {
+    delayCheck=millis();
 
-  try {
-    Status status = twitter2.updateStatus(tweetText);
-    println("Successfully updated the status to [" + status.getText() + "].");
+    println("tweet being sent");
+    println("tfTextCurrent = "+ tfTextCurrent);
+    String fortune = tweetTextIntro + tfTextCurrent + " from "+tweetText+ ", " +tweetTextOutro;
+    String fortuneSpoken = (fortuneGreeting + tfTextCurrent);
+    tts.speak(fortuneSpoken);
+    println("tweet Send actions complete over");
+    println();
+
+    //@@@
+    ConfigurationBuilder cb2 = new ConfigurationBuilder();
+    // ------- NB - the variables twitOAuthConsumerKey, etc. need to be in a 
+    // seperate 
+    cb2.setOAuthConsumerKey(twitOAuthConsumerKey);
+    cb2.setOAuthConsumerSecret(twitOAuthConsumerSecret);
+    cb2.setOAuthAccessToken(twitOAuthAccessToken);
+    cb2.setOAuthAccessTokenSecret(twitOAuthAccessTokenSecret);
+
+    Twitter twitter2 = new TwitterFactory(cb2.build()).getInstance();
+
+    try {
+      Status status = twitter2.updateStatus(fortune);
+      println("Successfully tweeted the message: "+fortune + " to user: [" + status.getText() + "].");
+    } 
+    catch(TwitterException e) { 
+      println("Send tweet: " + e + " Status code: " + e.getStatusCode());
+    } // end try
+    // CALL A FUNCTION FOR BUTTON ACTIONS HERE. 
+    // NB - THIS CANNOT BE CALLED AGAIN UNTIL AFTER 
+    b.setWidth (50);
   } 
-  catch(TwitterException e) { 
-    println("Send tweet: " + e + " Status code: " + e.getStatusCode());
-  } // end try
+
+  if (timerT-delayCheck>=tweetTimer) {
+    //println("LESS THAN: pressed at = "+(timerT-delayCheck));
+    b.setWidth (250);
+  }
 }
 
 void grabTweets() {
@@ -202,40 +233,21 @@ void grabTweets() {
 
 void buttonCheck(String tweetTextIntro)
 {
-  String tfTextCurrent=tf.getText() ;
-  float timerB=millis();  // reset the timer
 
-  if (b.isPressed())
-  {
-    if (timerB-delayCheck>=tweetTimer)
-    {
-      delayCheck=millis();
+  if (b.isPressed()) {
 
-      println("button being pressed");
-      println("tfTextCurrent = "+ tfTextCurrent);
-      String fortune = tweetTextIntro + tfTextCurrent+" username is user entered in form field!";
-      String fortuneSpoken = (fortuneGreeting + tfTextCurrent);
-      sendTweet(fortune);
-      tts.speak(fortuneSpoken);
-      println("button-pressed over");
-
-      // CALL A FUNCTION FOR BUTTON ACTIONS HERE. 
-      // NB - THIS CANNOT BE CALLED AGAIN UNTIL AFTER 
-      b.setWidth (50);
-    }
-  }
-  else {// button is no longer pressed
-    if (timerB-delayCheck>=tweetTimer) {
-      //println("LESS THAN: pressed at = "+(timerB-delayCheck));
-      b.setWidth (250);
-    } 
-    //println("button NOT being pressed:  = "+(timerB-delayCheck));
+    println("button being pressed");
+    sendTweet ("digital (onscreen) Button");
+    // action for onscreen button press
   }
 }
 
 void checkSerial() {
-  while (port.available() > 0) {
+  while (port.available () > 0) {
     String inByte = port.readString();
+    if (inByte =="fireTwitterCall") {
+    }
+    sendTweet ("physical Button");
     println(inByte);
   }
 }
