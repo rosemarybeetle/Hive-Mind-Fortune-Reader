@@ -10,8 +10,7 @@
 // https://code.google.com/p/controlp5/source/browse/trunk/examples/controlP5button/controlP5button.pde?r=6
 // ----
 // -----------------------
-//Build an ArrayList to hold all of the words that we get from the imported tweets
-ArrayList<String> words = new ArrayList();
+
 
 // define Twitter Developer keys (you need to register your app to get one of these
 // Obviously these four variables are not real Twitter strings ones
@@ -19,7 +18,12 @@ ArrayList<String> words = new ArrayList();
 //String twitOAuthConsumerSecret="yyyyyyyyyyyyyyyyyyyy";
 //String twitOAuthAccessToken="zzzzzzzzzzzzzzzzzzzzzzzz";
 //String twitOAuthAccessTokenSecret="wwwwwwwwwwwwwwwwwwwwwwwwww";
+// -----
 
+String tweetTextIntro = "Hive fortune reading for ";
+String fortuneGreeting = "Hello. I have stared deep. into the hive. mind. Your fortune. reading. is."; 
+//Build an ArrayList to hold all of the words that we get from the imported tweets
+ArrayList<String> words = new ArrayList();
 
 import controlP5.*; // import the GUI library
 //import twitterOAUTH.*;// import the twitter handshake keys
@@ -27,7 +31,14 @@ ControlP5 cp5; // creates a controller I think!
 ControlFont font;
 controlP5.Button b;
 controlP5.Textfield tf;
+controlP5.Textlabel tfAlert;
 controlP5.Textlabel lb;
+
+import guru.ttslib.*; // NB this also needs to be loaded (available from http://www.local-guru.net/projects/ttslib/ttslib-0.3.zip)
+TTS tts;
+
+import processing.serial.*;
+Serial port;
 
 //  ------------- needed to stop Twitter overpolling from within sendTweet
 float tweetTimer = 5000; // wait period (in milliseconds) after sending a tweet, before you can send the next one
@@ -35,10 +46,15 @@ float delayCheck; //delayCheck; // THIS IS IMPORTANT. it i what stops overpollin
 //  ---------------
 
 void setup() {
+  tts = new TTS();
   //Set the size of the stage, and the background to black.
   size(550, 550);
   background(0);
   // now draw the admin panel
+  println(Serial.list());// display communication ports (use this in test to establish fee ports)
+  //if (Serial.list()[2] != null){ // error handling for port death on PC
+  port = new Serial(this, Serial.list()[2], 115200); 
+  //}
 
   //PFont font = createFont("arial",20);
   font = new ControlFont(createFont("arial", 100), 15);
@@ -52,7 +68,7 @@ void setup() {
   noStroke();
   tf = cp5.addTextfield("Enter your twitter username");
   tf.setPosition(10, 475);
-  tf.setStringValue("@");
+  // tf.setStringValue("@");
   tf.setSize(250, 25);
   tf.setFont(font);
   tf.setFocus(true);
@@ -60,6 +76,21 @@ void setup() {
   tf.setColor(color(255, 255, 255));
   tf.setText ("@");
   tf.captionLabel().setControlFont(font);
+
+  tfAlert = cp5.addTextlabel("please wait");
+  tfAlert.setPosition(150, 400);
+  tfAlert.setSize(250, 25);
+  tfAlert.setFont(font);
+
+  //tf.setAutoClear(true);
+  tfAlert.setColor(color(255, 255, 255));
+  tfAlert.getCaptionLabel().align(ControlP5.CENTER, ControlP5.CENTER);
+
+  tfAlert.setText ("Reading the twitter hive mind");
+
+  //tfAlert.setVisible(false) 
+  tfAlert.captionLabel().setControlFont(font);
+
 
 
   // create a new button with name 'Tell my Fortune'
@@ -86,8 +117,6 @@ void setup() {
   grabTweets();
   println ("finished grabbing tweets");
   println ();
-  String tweetTest = "wakey wakey script";
-  sendTweet(tweetTest);
 }
 
 void draw() {
@@ -105,8 +134,10 @@ void draw() {
   text(word, random(width), random(height));
   color c1 = color(70, 130, 180);
   fill (c1);
-  rect(0, 450, 550, 100);
-  buttonCheck();
+  rect(0, 400, 550, 150);
+
+  buttonCheck(tweetTextIntro);
+  checkSerial() ;
 }
 
 void sendTweet(String tweetText) {
@@ -169,8 +200,9 @@ void grabTweets() {
   };
 }
 
-void buttonCheck()
+void buttonCheck(String tweetTextIntro)
 {
+  String tfTextCurrent=tf.getText() ;
   float timerB=millis();  // reset the timer
 
   if (b.isPressed())
@@ -178,7 +210,15 @@ void buttonCheck()
     if (timerB-delayCheck>=tweetTimer)
     {
       delayCheck=millis();
+
       println("button being pressed");
+      println("tfTextCurrent = "+ tfTextCurrent);
+      String fortune = tweetTextIntro + tfTextCurrent+" username is user entered in form field!";
+      String fortuneSpoken = (fortuneGreeting + tfTextCurrent);
+      sendTweet(fortune);
+      tts.speak(fortuneSpoken);
+      println("button-pressed over");
+
       // CALL A FUNCTION FOR BUTTON ACTIONS HERE. 
       // NB - THIS CANNOT BE CALLED AGAIN UNTIL AFTER 
       b.setWidth (50);
@@ -190,5 +230,12 @@ void buttonCheck()
       b.setWidth (250);
     } 
     //println("button NOT being pressed:  = "+(timerB-delayCheck));
+  }
+}
+
+void checkSerial() {
+  while (port.available() > 0) {
+    String inByte = port.readString();
+    println(inByte);
   }
 }
