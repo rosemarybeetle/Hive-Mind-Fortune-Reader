@@ -21,9 +21,10 @@
 // -----
 
 String tweetTextIntro = "Hive fortune reading for ";
-String tweetTextOutro = ". thanks. ";
+int tweetTextOutro = int (random(99));
+String tweetSendTrigger ="fireTweet";
 
-String fortuneGreeting = "Hello. I have stared deep. into the hive. mind. Your fortune. reading. is."; 
+String fortuneGreeting = "Hello. I have stared deep. into the hive mind. Your fortune reading. is."; 
 String tfTextCurrent =""; // used to check what is in the text box
 //Build an ArrayList to hold all of the words that we get from the imported tweets
 ArrayList<String> words = new ArrayList();
@@ -177,28 +178,25 @@ void sendTweet (String tweetText) {
     try {
       Status status = twitter2.updateStatus(fortune);
       println("Successfully tweeted the message: "+fortune + " to user: [" + status.getText() + "].");
-    } 
+    delayCheck=millis();
+  } 
     catch(TwitterException e) { 
       println("Send tweet: " + e + " Status code: " + e.getStatusCode());
     } // end try
     // CALL A FUNCTION FOR BUTTON ACTIONS HERE. 
     // NB - THIS CANNOT BE CALLED AGAIN UNTIL AFTER 
-    b.setWidth (50);
-  } 
-
-  if (timerT-delayCheck>=tweetTimer) {
-    //println("LESS THAN: pressed at = "+(timerT-delayCheck));
     b.setWidth (250);
   }
+  
 }
 
 void grabTweets() {
   //Credentials
   ConfigurationBuilder cb = new ConfigurationBuilder();
-  cb.setOAuthConsumerKey("rAh2PMw62GS4IjEDEwjOQ");
-  cb.setOAuthConsumerSecret("50cxYksunoXqetscUTwBSNxK3W5dMdLqTehw41wEOs");
-  cb.setOAuthAccessToken("1300752990-QXSQbtrGCAYU2vN5fcd26Vbn6mPPhzCvcX5x5VV");
-  cb.setOAuthAccessTokenSecret("pau6x4FBX2mnnfpzI0iY19vFK86I6ZtyEGertXgYzak");
+  cb.setOAuthConsumerKey("twitOAuthConsumerKey");
+  cb.setOAuthConsumerSecret("twitOAuthConsumerSecret");
+  cb.setOAuthAccessToken("twitOAuthAccessToken");
+  cb.setOAuthAccessTokenSecret("twitOAuthAccessTokenSecret");
 
   //Make the twitter object and prepare the query
   Twitter twitter = new TwitterFactory(cb.build()).getInstance();
@@ -238,6 +236,7 @@ void buttonCheck(String tweetTextIntro)
 
     println("button being pressed");
     sendTweet ("digital (onscreen) Button");
+    b.setWidth(50);
     // action for onscreen button press
   }
 }
@@ -245,9 +244,16 @@ void buttonCheck(String tweetTextIntro)
 void checkSerial() {
   while (port.available () > 0) {
     String inByte = port.readString();
-    if (inByte =="fireTwitterCall") {
+   int w=int(random(150));
+         b.setWidth(w);
+         sendTweet ("physical Button");
+    
+    float tt=millis();
+    float t2=millis()+1;
+    while ( (t2-tt)<tweetTimer) {
+      t2=millis();
+      
+      
     }
-    sendTweet ("physical Button");
-    println(inByte);
   }
 }
