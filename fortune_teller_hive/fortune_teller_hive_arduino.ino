@@ -22,7 +22,7 @@ void setup() {
 void loop() {
   analogValue = analogRead(switchPin);   
   if (analogValue >=900) {
-  Serial.println("fireTwitterCall");
+  Serial.write("fireTweet");
   analogValue = 0; // reset - this is used to ensure the value is reset after a successful release of the switch
   // ADD ANY OTHER TRIGGERS HERE THAT COME FROM THIS INTERACTION
   }
