@@ -24,8 +24,9 @@ String tweetTextIntro = "Hive fortune reading for ";
 int tweetTextOutro = int (random(99));
 String tweetSendTrigger ="fireTweet";
 
-String fortuneGreeting = "Hello. I have stared deep. into the hive mind. Your fortune reading. is."; 
-String tfTextCurrent =""; // used to check what is in the text box
+String fortuneGreeting = "Hello. I have stared deep. into the hive mind. Your fortune reading is."; 
+String tfUserCurrent =""; // used to check what is in the username text box
+String tfTextCurrent =""; // used to check what is in the free-text text box
 //Build an ArrayList to hold all of the words that we get from the imported tweets
 ArrayList<String> words = new ArrayList();
 
@@ -35,14 +36,23 @@ ControlP5 cp5; // creates a controller I think!
 ControlFont font;
 controlP5.Button b;
 controlP5.Textfield tf;
+controlP5.Textfield tfRand;
 controlP5.Textlabel tfAlert;
 controlP5.Textlabel lb;
 
+// ---------------
+// --- import GURU text-to-speech library
 import guru.ttslib.*; // NB this also needs to be loaded (available from http://www.local-guru.net/projects/ttslib/ttslib-0.3.zip)
-TTS tts;
+TTS tts; // create an instance called 'tts'
+// ---
+//----------------
 
+// ---------------
+// --- import standard processing Serial library 
 import processing.serial.*;
-Serial port;
+Serial port; // create an instance called 'port'
+// ---
+// ---------------
 
 //  ------------- needed to stop Twitter overpolling from within sendTweet
 float tweetTimer = 5000; // wait period (in milliseconds) after sending a tweet, before you can send the next one
@@ -81,7 +91,20 @@ void setup() {
   tf.setColor(color(255, 255, 255));
   tf.setText ("@");
   tf.captionLabel().setControlFont(font);
-
+  // @@@ 
+  tfRand = cp5.addTextfield("Enter random msg text");
+  tfRand.setPosition(10, 415);
+  // tf.setStringValue("@");
+  tfRand.setSize(250, 25);
+  tfRand.setFont(font);
+  tfRand.setFocus(false);
+  //tf.setAutoClear(true);
+  tfRand.setColor(color(255, 255, 255));
+  tfRand.setText ("");
+  tfRand.captionLabel().setControlFont(font);
+  
+  // @@@
+  
   tfAlert = cp5.addTextlabel("please wait");
   tfAlert.setPosition(150, 400);
   tfAlert.setSize(250, 25);
@@ -140,7 +163,8 @@ void draw() {
   color c1 = color(70, 130, 180);
   fill (c1);
   rect(0, 400, 550, 150);
-  tfTextCurrent=tf.getText() ; //check the text box content every loop
+  tfUserCurrent=tf.getText() ; //check the text box content every loop
+  tfTextCurrent=tfRand.getText(); 
   buttonCheck(tfTextCurrent); // on screen check button every loop 
   checkSerial() ; // check serial port every loop
 }
@@ -157,9 +181,9 @@ void sendTweet (String tweetText) {
     delayCheck=millis();
 
     println("tweet being sent");
-    println("tfTextCurrent = "+ tfTextCurrent);
-    String fortune = tweetTextIntro + tfTextCurrent + " from "+tweetText+ ", " +tweetTextOutro;
-    String fortuneSpoken = (fortuneGreeting + tfTextCurrent);
+    println("tfUserCurrent = "+ tfUserCurrent);
+    String fortune = tweetTextIntro + tfUserCurrent + " from "+tweetText+ ", " +tfTextCurrent+". "+tweetTextOutro;
+    String fortuneSpoken = (fortuneGreeting + tfUserCurrent+ "How. do. you. feel about. "+fortune);
     tts.speak(fortuneSpoken);
     println("tweet Send actions complete over");
     println();
@@ -184,9 +208,7 @@ void sendTweet (String tweetText) {
     catch(TwitterException e) { 
       println("Send tweet: " + e + " Status code: " + e.getStatusCode());
     } // end try
-    // CALL A FUNCTION FOR BUTTON ACTIONS HERE. 
-    // NB - THIS CANNOT BE CALLED AGAIN UNTIL AFTER 
-    b.setWidth (250);
+     b.setWidth (250);
   }
 }
 
@@ -201,14 +223,14 @@ void grabTweets() {
   //Make the twitter object and prepare the query
   Twitter twitter = new TwitterFactory(cb.build()).getInstance();
   Query query = new Query("@museumnext");
-  query.setRpp(100);
+  query.setRpp(100); // rrp is the number of tweets returned per page
   // The factory instance is re-useable and thread safe.
 
   //Try making the query request.
   try {
-    QueryResult result = twitter.search(query);
-    ArrayList tweets = (ArrayList) result.getTweets();
-
+    QueryResult result = twitter.search(query); // gets the query
+    ArrayList tweets = (ArrayList) result.getTweets(); // creates an array to store tweets in
+    // then fills it up!
     for (int i = 0; i < tweets.size(); i++) {
       Tweet t = (Tweet) tweets.get(i);
       String user = t.getFromUser();
