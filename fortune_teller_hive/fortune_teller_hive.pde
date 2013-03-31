@@ -178,8 +178,9 @@ void sendTweet (String tweetText) {
     try {
       Status status = twitter2.updateStatus(fortune);
       println("Successfully tweeted the message: "+fortune + " to user: [" + status.getText() + "].");
-    delayCheck=millis();
-  } 
+      delayCheck=millis();
+      
+    } 
     catch(TwitterException e) { 
       println("Send tweet: " + e + " Status code: " + e.getStatusCode());
     } // end try
@@ -187,7 +188,6 @@ void sendTweet (String tweetText) {
     // NB - THIS CANNOT BE CALLED AGAIN UNTIL AFTER 
     b.setWidth (250);
   }
-  
 }
 
 void grabTweets() {
@@ -243,17 +243,22 @@ void buttonCheck(String tweetTextIntro)
 
 void checkSerial() {
   while (port.available () > 0) {
+
     String inByte = port.readString();
-   int w=int(random(150));
-         b.setWidth(w);
-         sendTweet ("physical Button");
+     println ("Safe from OUSIDE IF . inByte = "+inByte);
+      int w=int(random(150));
+      b.setWidth(w);
+
+     
+     println ();
+   
+       port.clear();
+      sendTweet ("physical Button");
     
-    float tt=millis();
-    float t2=millis()+1;
-    while ( (t2-tt)<tweetTimer) {
-      t2=millis();
-      
-      
-    }
   }
+  /*float tt=millis();
+   float t2=millis()+1;
+   while ( (t2-tt)<tweetTimer) {
+   t2=millis();
+   }*/
 }
