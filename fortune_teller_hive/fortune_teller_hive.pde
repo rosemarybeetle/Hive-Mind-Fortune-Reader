@@ -1,4 +1,4 @@
-// -----------------------
+// ----------------------
 // ----
 // This is based on code by  @@@ Jer Thorp @@@
 // From http://blog.blprnt.com/blog/blprnt/updated-quick-tutorial-processing-twitter
