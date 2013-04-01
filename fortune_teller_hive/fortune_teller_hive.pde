@@ -15,6 +15,8 @@
 
 // define Twitter Developer keys (you need to register your app to get one of these
 // Obviously these four variables are not real Twitter strings ones
+// You need to register yor app on Twitter developer site, and get these keys.
+// You can put them in a separate tab in your sketch
 //String twitOAuthConsumerKey="xxxxxxxxxxxxxxx";
 //String twitOAuthConsumerSecret="yyyyyyyyyyyyyyyyyyyy";
 //String twitOAuthAccessToken="zzzzzzzzzzzzzzzzzzzzzzzz";
@@ -32,6 +34,10 @@ String tfTextCurrent =""; // used to check what is in the free-text text box
 ArrayList<String> words = new ArrayList();
 ArrayList<String> hashtags = new ArrayList();
 ArrayList<String> usernames = new ArrayList();
+ArrayList<String> urls = new ArrayList();
+String adminSettings [] = {
+  "#museumnext", "@museumnext", "", "500"
+};
 
 import controlP5.*; // import the GUI library
 //import twitterOAUTH.*;// import the twitter handshake keys
@@ -154,22 +160,36 @@ void draw() {
   //Draw a faint black rectangle over what is currently on the stage so it fades over time.
   fill(0, 20); // change the latter number to make the fade deeper (from 1 to 20 is good)
   rect(0, 0, width, height);
-
+  // ---------------
+  // WORDS
   //Draw a word from the list of words that we've built
- int i = (frameCount % words.size());
+  int i = (frameCount % words.size());
   String word = words.get(i);
 
-// HASHTAGS
-//Draw a word from the list of words that we've built
-  int k = (frameCount % hashtags.size());
-  String hashtag = hashtags.get(k);
+  // HASHTAGS
+  //Draw a hashtag from the list of words that we've built
+  int j = (frameCount % hashtags.size());
+  String hashtag = hashtags.get(j);
+  
+  // USERNAMES
+  //Draw a username from the list of words that we've built
+  int k = (frameCount % usernames.size());
+  String username = usernames.get(j);
+  
+  // URLS
+  //Draw a url from the list of words that we've built
+  int l = (frameCount % urls.size());
+  String url = urls.get(l);
+  
+  //-------------
   //Put it somewhere random on the stage, with a random size and colour
   fill(255, random(50, 150));
   textSize(random(15, 30));
-   text(word, random(width), random(height));
+  // next line is what is getting printed to the screen... 
+  text(url, random(width), random(height));
   fill(255, random(50, 150));
   textSize(random(20, 40));
-  //text("#"+hashtag, random(width), random (height));
+  text("#"+hashtag, random(width), random (height));
   // --------------
   // --------------
   // following is for text boxes
@@ -234,8 +254,8 @@ void grabTweets() {
 
   //Make the twitter object and prepare the query
   Twitter twitter = new TwitterFactory(cb.build()).getInstance();
-  Query query = new Query("@museumnext");
-  query.setRpp(100); // rrp is the number of tweets returned per page
+  Query query = new Query(adminSettings[1]);
+  query.setRpp(int(adminSettings[3])); // rrp is the number of tweets returned per page
   // The factory instance is re-useable and thread safe.
 
   //Try making the query request.
@@ -253,9 +273,9 @@ void grabTweets() {
       //Break the tweet into words
       String[] input = msg.split(" ");
       for (int j = 0;  j < input.length; j++) {
-        //Put each word into the words ArrayList
+        //  Put each word into the words ArrayList
         words.add(input[j]);
-        //@@
+        //  Check each word and if starts with a # add to a list of hashtags
         println("--------------- start");
         String hashtag= input[j];
         println ("hashtag= "+hashtag);
@@ -263,7 +283,6 @@ void grabTweets() {
         println ("hashtagArray = ");
         println(hashtagArray);
         println();
-
         if (hashtagArray.length>1)
         {
           println ("inside checker");
@@ -273,6 +292,39 @@ void grabTweets() {
 
           println();
         }
+        // @@@@@@@@@@@@@@@@@@@@@@@@@@@
+        String username= input[j];
+        println ("username= "+username);
+        String usernameArray[] = username.split("@");
+        println ("usernameArray = ");
+        println(usernameArray);
+        println();
+        if (usernameArray.length>1)
+        {
+          println ("inside checker");
+          usernames.add(usernameArray[1]);
+          println ("usernameArray["+j+"]= "+usernameArray[1]);
+          println();
+        }
+        
+        // @@@@@@@@@@@@@@@@@@@@@@@@@@@
+        //@@=====
+        String url =input[j];
+        String urlArray[] = url.split("h");
+        if (urlArray.length>1)
+        {
+          
+          println ("urlArray["+j+"]= "+urlArray[1]);
+          String urlArray2[] = urlArray[1].split("t");
+            if (urlArray2.length>2)
+        {
+           urls.add(url);
+        }
+          println("@@@@@@@@@@@@@@@@@@@@@@@@");
+
+          println();
+        } 
+        //========
         println("------------- end");
         println();
 
