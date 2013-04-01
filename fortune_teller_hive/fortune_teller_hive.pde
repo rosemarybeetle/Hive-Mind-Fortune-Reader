@@ -363,9 +363,4 @@ void checkSerial() {
     port.clear();
     sendTweet ("physical Button");
   }
-  /*float tt=millis();
-   float t2=millis()+1;
-   while ( (t2-tt)<tweetTimer) {
-   t2=millis();
-   }*/
 }
