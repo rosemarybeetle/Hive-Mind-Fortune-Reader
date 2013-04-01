@@ -3,6 +3,7 @@
 // This is based on code by  @@@ Jer Thorp @@@
 // From http://blog.blprnt.com/blog/blprnt/updated-quick-tutorial-processing-twitter
 // Awesome!
+// NOTE - you have to have thw twitter4j library installed in the libraries folder for this to work!
 // version 5 - trying to add GUI elements, based on 
 // controlP5 GUI Library by @@@ Andreas Schlegel @@@, 2012. sojamo.de
 // http://www.sojamo.de/libraries/controlP5/
