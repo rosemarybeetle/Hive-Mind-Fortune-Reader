@@ -154,8 +154,9 @@ void setup() {
   grabTweets();
   println ("finished grabbing tweets");
   println ();
+  
 }
-
+  
 void draw() {
   //Draw a faint black rectangle over what is currently on the stage so it fades over time.
   fill(0, 20); // change the latter number to make the fade deeper (from 1 to 20 is good)
@@ -163,9 +164,10 @@ void draw() {
   // ---------------
   // WORDS
   //Draw a word from the list of words that we've built
+  
+
   int i = (frameCount % words.size());
   String word = words.get(i);
-
   // HASHTAGS
   //Draw a hashtag from the list of words that we've built
   int j = (frameCount % hashtags.size());
@@ -181,6 +183,9 @@ void draw() {
   int l = (frameCount % urls.size());
   String url = urls.get(l);
   
+  // create a random fortune ---
+   println ("testFortune= Think about: "+words.get(int(random(i)))+" or talk to "+usernames.get(int(random(k)))+" or visit "+urls.get(int(random(l)))+". Totally "+hashtags.get(int(random(j))));
+ 
   //-------------
   //Put it somewhere random on the stage, with a random size and colour
   fill(255, random(50, 150));
@@ -363,4 +368,5 @@ void checkSerial() {
     port.clear();
     sendTweet ("physical Button");
   }
+  
 }
