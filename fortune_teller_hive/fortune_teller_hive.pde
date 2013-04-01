@@ -30,6 +30,8 @@ String tfUserCurrent =""; // used to check what is in the username text box
 String tfTextCurrent =""; // used to check what is in the free-text text box
 //Build an ArrayList to hold all of the words that we get from the imported tweets
 ArrayList<String> words = new ArrayList();
+ArrayList<String> hashtags = new ArrayList();
+ArrayList<String> usernames = new ArrayList();
 
 import controlP5.*; // import the GUI library
 //import twitterOAUTH.*;// import the twitter handshake keys
@@ -103,9 +105,9 @@ void setup() {
   tfRand.setColor(color(255, 255, 255));
   tfRand.setText ("");
   tfRand.captionLabel().setControlFont(font);
-  
+
   // @@@
-  
+
   tfAlert = cp5.addTextlabel("please wait");
   tfAlert.setPosition(150, 400);
   tfAlert.setSize(250, 25);
@@ -150,17 +152,27 @@ void setup() {
 
 void draw() {
   //Draw a faint black rectangle over what is currently on the stage so it fades over time.
-  fill(0, 1);
+  fill(0, 20); // change the latter number to make the fade deeper (from 1 to 20 is good)
   rect(0, 0, width, height);
 
   //Draw a word from the list of words that we've built
-  int i = (frameCount % words.size());
+ int i = (frameCount % words.size());
   String word = words.get(i);
 
+// HASHTAGS
+//Draw a word from the list of words that we've built
+  int k = (frameCount % hashtags.size());
+  String hashtag = hashtags.get(k);
   //Put it somewhere random on the stage, with a random size and colour
   fill(255, random(50, 150));
-  textSize(random(10, 30));
-  text(word, random(width), random(height));
+  textSize(random(15, 30));
+   text(word, random(width), random(height));
+  fill(255, random(50, 150));
+  textSize(random(20, 40));
+  //text("#"+hashtag, random(width), random (height));
+  // --------------
+  // --------------
+  // following is for text boxes
   color c1 = color(70, 130, 180);
   fill (c1);
   rect(0, 400, 550, 150);
@@ -204,12 +216,11 @@ void sendTweet (String tweetText) {
       Status status = twitter2.updateStatus(fortune);
       println("Successfully tweeted the message: "+fortune + " to user: [" + status.getText() + "].");
       delayCheck=millis();
-      
     } 
     catch(TwitterException e) { 
       println("Send tweet: " + e + " Status code: " + e.getStatusCode());
     } // end try
-     b.setWidth (250);
+    b.setWidth (250);
   }
 }
 
@@ -244,6 +255,28 @@ void grabTweets() {
       for (int j = 0;  j < input.length; j++) {
         //Put each word into the words ArrayList
         words.add(input[j]);
+        //@@
+        println("--------------- start");
+        String hashtag= input[j];
+        println ("hashtag= "+hashtag);
+        String hashtagArray[] = hashtag.split("#");
+        println ("hashtagArray = ");
+        println(hashtagArray);
+        println();
+
+        if (hashtagArray.length>1)
+        {
+          println ("inside checker");
+          hashtags.add(hashtagArray[1]);
+          println ("hashtagArray["+j+"]= "+hashtagArray[1]);
+          println();
+
+          println();
+        }
+        println("------------- end");
+        println();
+
+        //@@
       }
     };
   }
@@ -268,16 +301,15 @@ void checkSerial() {
   while (port.available () > 0) {
 
     String inByte = port.readString();
-     println ("Safe from OUSIDE IF . inByte = "+inByte);
-      int w=int(random(150));
-      b.setWidth(w);
+    println ("Safe from OUSIDE IF . inByte = "+inByte);
+    int w=int(random(150));
+    b.setWidth(w);
 
-     
-     println ();
-   
-       port.clear();
-      sendTweet ("physical Button");
-    
+
+    println ();
+
+    port.clear();
+    sendTweet ("physical Button");
   }
   /*float tt=millis();
    float t2=millis()+1;
