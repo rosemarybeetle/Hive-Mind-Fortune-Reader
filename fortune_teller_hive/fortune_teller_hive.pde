@@ -77,7 +77,7 @@ void setup() {
   // now draw the admin panel
   println(Serial.list());// display communication ports (use this in test to establish fee ports)
   //if (Serial.list()[2] != null){ // error handling for port death on PC
-  port = new Serial(this, Serial.list()[2], 115200); 
+port = new Serial(this, Serial.list()[0], 115200); 
   //}
 
   //PFont font = createFont("arial",20);
@@ -189,12 +189,19 @@ void draw() {
   //-------------
   //Put it somewhere random on the stage, with a random size and colour
   fill(255, random(50, 150));
-  textSize(random(15, 30));
+  textSize(random(10,20));
   // next line is what is getting printed to the screen... 
   text(url, random(width), random(height));
-  fill(255, random(50, 150));
-  textSize(random(20, 40));
+  fill(255, random(50,150));
+  textSize(random(10, 15));
   text("#"+hashtag, random(width), random (height));
+   textSize(random(15, 30));
+  text(word, random(width), random (height));
+   fill(255, random(50, 100));
+   textSize(random(10,15));
+text("@"+username, random(width), random (height));
+  
+ 
   // --------------
   // --------------
   // following is for text boxes
