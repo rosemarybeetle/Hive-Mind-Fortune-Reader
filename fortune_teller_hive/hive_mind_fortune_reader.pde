@@ -82,7 +82,23 @@ void setup() {
   // now draw the admin panel
   println(Serial.list());// display communication ports (use this in test to establish fee ports)
   //if (Serial.list()[2] != null){ // error handling for port death on PC
-port = new Serial(this, Serial.list()[0], 115200); 
+ try { 
+ port = new Serial(this, Serial.list()[0], 115200); 
+ } 
+ catch (ArrayIndexOutOfBoundsException ae) {
+   println ("STOP - No PORT CONNECTION");
+   println ("STOP - No PORT CONNECTION");
+   println ("STOP - No PORT CONNECTION");
+   println ("STOP - No PORT CONNECTION");
+   println ("STOP - No PORT CONNECTION");
+   println ("STOP - No PORT CONNECTION");
+   println ("STOP - No PORT CONNECTION");
+   println ("STOP - No PORT CONNECTION");
+   println ("Exception = "+ae);
+   println ("-------------------------");
+   println ("-------------------------");
+   
+ }
   //}
 
   //PFont font = createFont("arial",20);
@@ -367,6 +383,7 @@ void buttonCheck(String tweetTextIntro)
 }
 
 void checkSerial() {
+  try {
   while (port.available () > 0) {
 
     String inByte = port.readString();
@@ -379,6 +396,10 @@ void checkSerial() {
 
     port.clear();
     sendTweet ("physical Button");
+  }
+  } // end try
+  catch (NullPointerException npe) {
+    println ("Check serial exception = "+npe);
   }
   
 }
