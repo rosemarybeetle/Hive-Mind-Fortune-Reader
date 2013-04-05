@@ -1,4 +1,4 @@
-Fortune Teller Hive
+Hive-Mind Fortune-Reader
 ==========
 
 Code for making connection between physical and digital.
