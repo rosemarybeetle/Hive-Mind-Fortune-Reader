@@ -1,5 +1,9 @@
 // -----------------------
 // ----
+// Hive-Mind Fortune-Reader
+// This sketch is the mind control or an automaton that can read the collective mind of twitter activity
+// And feed it back to a physical automaton to create fortune readings...
+//
 // This is based on code by  @@@ Jer Thorp @@@
 // From http://blog.blprnt.com/blog/blprnt/updated-quick-tutorial-processing-twitter
 // Awesome!
@@ -71,13 +75,14 @@ float delayCheck; //delayCheck; // THIS IS IMPORTANT. it i what stops overpollin
 
 void setup() {
   tts = new TTS();
-  //Set the size of the stage, and the background to black.
-  size(550, 550);
-  background(0);
+  //Set the size of the stage, 
+  //size(550, 550); // TEST SETTING
+  size(screen.width-10, screen.height-10);// USE THIS SETTING FOR EXPORTED APPLICATION IN FULLSCVREEN (PRESENT) MODE
+    background(0); // SET BACKGROUND TO BLACK
   // now draw the admin panel
   println(Serial.list());// display communication ports (use this in test to establish fee ports)
   //if (Serial.list()[2] != null){ // error handling for port death on PC
-  port = new Serial(this, Serial.list()[2], 115200); 
+port = new Serial(this, Serial.list()[0], 115200); 
   //}
 
   //PFont font = createFont("arial",20);
@@ -189,12 +194,19 @@ void draw() {
   //-------------
   //Put it somewhere random on the stage, with a random size and colour
   fill(255, random(50, 150));
-  textSize(random(15, 30));
+  textSize(random(10,20));
   // next line is what is getting printed to the screen... 
   text(url, random(width), random(height));
-  fill(255, random(50, 150));
-  textSize(random(20, 40));
+  fill(255, random(50,150));
+  textSize(random(10, 15));
   text("#"+hashtag, random(width), random (height));
+   textSize(random(15, 30));
+  text(word, random(width), random (height));
+   fill(255, random(50, 100));
+   textSize(random(10,15));
+text("@"+username, random(width), random (height));
+  
+ 
   // --------------
   // --------------
   // following is for text boxes
