@@ -75,7 +75,7 @@ float delayCheck; //delayCheck; // THIS IS IMPORTANT. it i what stops overpollin
 
 void setup() {
   tts = new TTS();
-  //loadRemoteAdminSettings();
+  loadRemoteAdminSettings();
   //Set the size of the stage, 
   //size(550, 550); // TEST SETTING
   size(screen.width-10, screen.height-10);// USE THIS SETTING FOR EXPORTED APPLICATION IN FULLSCVREEN (PRESENT) MODE
