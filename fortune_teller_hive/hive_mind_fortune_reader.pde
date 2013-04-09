@@ -40,7 +40,7 @@ ArrayList<String> hashtags = new ArrayList();
 ArrayList<String> usernames = new ArrayList();
 ArrayList<String> urls = new ArrayList();
 String adminSettings [] = {
-  "#museumnext", "@museumnext", "", "500"
+  "#hivemind", "@rosemarybeetle", "weird", "500"
 };
 
 import controlP5.*; // import the GUI library
@@ -75,6 +75,7 @@ float delayCheck; //delayCheck; // THIS IS IMPORTANT. it i what stops overpollin
 
 void setup() {
   tts = new TTS();
+  loadRemoteAdminSettings();
   //Set the size of the stage, 
   //size(550, 550); // TEST SETTING
   size(screen.width-10, screen.height-10);// USE THIS SETTING FOR EXPORTED APPLICATION IN FULLSCVREEN (PRESENT) MODE
@@ -82,7 +83,23 @@ void setup() {
   // now draw the admin panel
   println(Serial.list());// display communication ports (use this in test to establish fee ports)
   //if (Serial.list()[2] != null){ // error handling for port death on PC
-port = new Serial(this, Serial.list()[0], 115200); 
+ try { 
+ port = new Serial(this, Serial.list()[0], 115200); 
+ } 
+ catch (ArrayIndexOutOfBoundsException ae) {
+   println ("STOP - No PORT CONNECTION");
+   println ("STOP - No PORT CONNECTION");
+   println ("STOP - No PORT CONNECTION");
+   println ("STOP - No PORT CONNECTION");
+   println ("STOP - No PORT CONNECTION");
+   println ("STOP - No PORT CONNECTION");
+   println ("STOP - No PORT CONNECTION");
+   println ("STOP - No PORT CONNECTION");
+   println ("Exception = "+ae);
+   println ("-------------------------");
+   println ("-------------------------");
+   
+ }
   //}
 
   //PFont font = createFont("arial",20);
@@ -181,7 +198,7 @@ void draw() {
   // USERNAMES
   //Draw a username from the list of words that we've built
   int k = (frameCount % usernames.size());
-  String username = usernames.get(j);
+  String username = usernames.get(k);
   
   // URLS
   //Draw a url from the list of words that we've built
@@ -271,7 +288,7 @@ void grabTweets() {
 
   //Make the twitter object and prepare the query
   Twitter twitter = new TwitterFactory(cb.build()).getInstance();
-  Query query = new Query(adminSettings[1]);
+  Query query = new Query(adminSettings[0]);
   query.setRpp(int(adminSettings[3])); // rrp is the number of tweets returned per page
   // The factory instance is re-useable and thread safe.
 
@@ -367,6 +384,7 @@ void buttonCheck(String tweetTextIntro)
 }
 
 void checkSerial() {
+  try {
   while (port.available () > 0) {
 
     String inByte = port.readString();
@@ -380,5 +398,33 @@ void checkSerial() {
     port.clear();
     sendTweet ("physical Button");
   }
+  } // end try
+  catch (NullPointerException npe) {
+    println ("Check serial exception = "+npe);
+  }
   
+}
+
+void loadRemoteAdminSettings ()
+{
+  String [] texty = loadStrings("https://spreadsheets.google.com/feeds/list/0AgTXh43j7oFVdC12aXp1M1lJQ0JUYlF2RWtJa1RBVGc/od6/public/basic?alt=rss");
+println (texty);
+String paas []= split (texty [0],':');
+String hashtag[]=split (paas[27], ',');
+String username[]=split (paas[28], ',');
+
+String searchterm[]=split (paas[29], ',');
+
+String ppm[]=split (paas[30], ',');
+adminSettings [0]= hashtag[0];
+println ("hashtag loaded remotely as "+hashtag[0]);
+
+adminSettings [1]= username[0];
+println ("username loaded remotely as "+username[0]);
+
+adminSettings [2]= searchterm[0];
+println ("searchterm loaded remotely as "+searchterm[0]);
+
+adminSettings [3]= ppm[0];
+println ("PPM loaded remotely as "+ppm[0]);
 }
