@@ -75,7 +75,8 @@ float delayCheck; //delayCheck; // THIS IS IMPORTANT. it i what stops overpollin
 
 void setup() {
   tts = new TTS();
-  loadRemoteAdminSettings();
+  loadRemoteAdminSettings(); // loads Twitter serch parameters from remote Google spreadsheet
+  loadRemoteStopWords();// load list of stop words into an array, loaded from a remote spreadsheet
   //Set the size of the stage, 
   //size(550, 550); // TEST SETTING
   size(screen.width-10, screen.height-10);// USE THIS SETTING FOR EXPORTED APPLICATION IN FULLSCVREEN (PRESENT) MODE
@@ -427,4 +428,12 @@ println ("searchterm loaded remotely as "+searchterm[0]);
 
 adminSettings [3]= ppm[0];
 println ("PPM loaded remotely as "+ppm[0]);
+}
+void loadRemoteStopWords ()
+{
+  String [] stopWords = loadStrings("https://docs.google.com/spreadsheet/pub?key=0AgTXh43j7oFVdFByYk41am9jRnRkeU9LWnhjZFJTOEE&output=txt");
+for (int i = 0 ; i < stopWords.length; i++) {
+  println("stopWords["+i+"]= "+stopWords[i]);
+}
+
 }
