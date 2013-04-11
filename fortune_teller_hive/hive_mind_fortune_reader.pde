@@ -47,11 +47,12 @@ String tfTextCurrent =""; // used to check what is in the free-text text box
 // <<<<<<
 
 // >>>>>> Build an ArrayList to hold all of the words that we get from the imported tweets
-ArrayList<String> words = new ArrayList();
+ArrayList<String> words = new ArrayList(); 
 ArrayList<String> hashtags = new ArrayList();
 ArrayList<String> usernames = new ArrayList();
 ArrayList<String> urls = new ArrayList();
-//ArrayList<String> stopWords = new ArrayList();
+ArrayList<String> cleanTweets = new ArrayList();
+ArrayList<String> stopWords = new ArrayList();
 // <<<<<<
 
 // >>>>> adminSetting
@@ -321,7 +322,8 @@ void grabTweets() {
 
   //Make the twitter object and prepare the query
   Twitter twitter = new TwitterFactory(cb.build()).getInstance();
-  Query query = new Query(adminSettings[0]);
+  Query query = new Query(adminSettings[0]); // this is assuming you check the first of 4 admin settings, but should be extended to include passing a selctor param
+  
   query.setRpp(int(adminSettings[3])); // rrp is the number of tweets returned per page
   // The factory instance is re-useable and thread safe.
 
@@ -330,6 +332,7 @@ void grabTweets() {
     QueryResult result = twitter.search(query); // gets the query
     ArrayList tweets = (ArrayList) result.getTweets(); // creates an array to store tweets in
     // then fills it up!
+    
     println ("number of tweets = "+tweets.size());
     for (int i = 0; i < tweets.size(); i++) {
       Tweet t = (Tweet) tweets.get(i);
@@ -446,11 +449,14 @@ void loadRemoteAdminSettings ()
 // >>>>
 void loadRemoteStopWords ()
 {
-  String stopWords [] = loadStrings("https://docs.google.com/spreadsheet/pub?key=0AgTXh43j7oFVdFByYk41am9jRnRkeU9LWnhjZFJTOEE&output=txt");
+  String stopWordsLoader [] = loadStrings("https://docs.google.com/spreadsheet/pub?key=0AgTXh43j7oFVdFByYk41am9jRnRkeU9LWnhjZFJTOEE&output=txt");
   if (loadstopWordsCheckInt==true)
   {
-    for (int i = 0 ; i < stopWords.length; i++) {
-      println("stopWords["+i+"]= "+stopWords[i]);
+    for (int i = 0 ; i < stopWordsLoader.length; i++) {
+      //stop
+      stopWords.add(stopWordsLoader[i]);
+        println("stopWords["+i+"]= "+stopWords.get(i)+". Length now: "+stopWords.size());
+    
     }
     loadstopWordsCheckInt=false;
   }
