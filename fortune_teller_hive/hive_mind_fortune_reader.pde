@@ -27,24 +27,41 @@
 //String twitOAuthAccessTokenSecret="wwwwwwwwwwwwwwwwwwwwwwwwww";
 // -----
 
+// >>>>>>
+boolean serialCheckInt=true;
+boolean grabtweetCheckInt=true;
+boolean loadSettingsCheckInt=true;
+boolean loadstopWordsCheckInt=true;
+// <<<<<< end load flags
+
+//  >>>>> fortune textxs - make these external later #enhancement
 String tweetTextIntro = "Hive fortune reading for ";
 int tweetTextOutro = int (random(99));
 String tweetSendTrigger ="fireTweet";
-
 String fortuneGreeting = "Hello. I have stared deep. into the hive mind. Your fortune reading is."; 
+// <<<<<<
+
+// >>>>>>
 String tfUserCurrent =""; // used to check what is in the username text box
 String tfTextCurrent =""; // used to check what is in the free-text text box
-//Build an ArrayList to hold all of the words that we get from the imported tweets
+// <<<<<<
+
+// >>>>>> Build an ArrayList to hold all of the words that we get from the imported tweets
 ArrayList<String> words = new ArrayList();
 ArrayList<String> hashtags = new ArrayList();
 ArrayList<String> usernames = new ArrayList();
 ArrayList<String> urls = new ArrayList();
-String adminSettings [] = {
-  "#hivemind", "@rosemarybeetle", "weird", "500"
-};
+//ArrayList<String> stopWords = new ArrayList();
+// <<<<<<
 
+// >>>>> adminSetting
+String adminSettings [] = {
+  "#hivemind", "@rosemarybeetle", "weird", "100"
+}; 
+// <<<<<< fill with defaults in case remote settings don't load 
+
+// >>>>>> GUI library and settiongs
 import controlP5.*; // import the GUI library
-//import twitterOAUTH.*;// import the twitter handshake keys
 ControlP5 cp5; // creates a controller I think!
 ControlFont font;
 controlP5.Button b;
@@ -52,65 +69,67 @@ controlP5.Textfield tf;
 controlP5.Textfield tfRand;
 controlP5.Textlabel tfAlert;
 controlP5.Textlabel lb;
+// <<<<<<<
 
-// ---------------
-// --- import GURU text-to-speech library
+
+// >>>>>>>  import GURU text-to-speech library
 import guru.ttslib.*; // NB this also needs to be loaded (available from http://www.local-guru.net/projects/ttslib/ttslib-0.3.zip)
 TTS tts; // create an instance called 'tts'
-// ---
-//----------------
+// <<<<<<<
 
-// ---------------
-// --- import standard processing Serial library 
+// >>>>>>> import standard processing Serial library 
 import processing.serial.*;
 Serial port; // create an instance called 'port'
-// ---
-// ---------------
+// <<<<<<<
 
-//  ------------- needed to stop Twitter overpolling from within sendTweet
+//  >>>>>> needed to stop Twitter overpolling from within sendTweet
 float tweetTimer = 5000; // wait period (in milliseconds) after sending a tweet, before you can send the next one
 float timerT=millis(); // temporary timer for sendTweet
 float delayCheck; //delayCheck; // THIS IS IMPORTANT. it i what stops overpollin g of the Twitte API
-//  ---------------
+//  <<<<<<
+
 
 void setup() {
   tts = new TTS();
-  loadRemoteAdminSettings();
+  loadRemoteAdminSettings(); // loads Twitter serch parameters from remote Google spreadsheet
+  loadRemoteStopWords();// load list of stop words into an array, loaded from a remote spreadsheet
   //Set the size of the stage, 
   //size(550, 550); // TEST SETTING
-  size(screen.width-10, screen.height-10);// USE THIS SETTING FOR EXPORTED APPLICATION IN FULLSCVREEN (PRESENT) MODE
-    background(0); // SET BACKGROUND TO BLACK
-  // now draw the admin panel
-  println(Serial.list());// display communication ports (use this in test to establish fee ports)
-  //if (Serial.list()[2] != null){ // error handling for port death on PC
- try { 
- port = new Serial(this, Serial.list()[0], 115200); 
- } 
- catch (ArrayIndexOutOfBoundsException ae) {
-   println ("STOP - No PORT CONNECTION");
-   println ("STOP - No PORT CONNECTION");
-   println ("STOP - No PORT CONNECTION");
-   println ("STOP - No PORT CONNECTION");
-   println ("STOP - No PORT CONNECTION");
-   println ("STOP - No PORT CONNECTION");
-   println ("STOP - No PORT CONNECTION");
-   println ("STOP - No PORT CONNECTION");
-   println ("Exception = "+ae);
-   println ("-------------------------");
-   println ("-------------------------");
-   
- }
-  //}
 
+  // >>>>>>> screen size and settings....
+  size(screen.width-10, screen.height-10);// USE THIS SETTING FOR EXPORTED APPLICATION IN FULLSCVREEN (PRESENT) MODE
+  background(0); // SET BACKGROUND TO BLACK
+  // <<<<<<<
+
+  // >>>>> Make initial serial port connection handshake
+  println(Serial.list());// display communication ports (use this in test for available ports)
+  try { 
+    port = new Serial(this, Serial.list()[0], 115200);
+  } 
+  catch (ArrayIndexOutOfBoundsException ae) {
+    // if errors
+    println ("STOP - No PORT CONNECTION");
+    println ("STOP - No PORT CONNECTION");
+    println ("STOP - No PORT CONNECTION");
+    println ("STOP - No PORT CONNECTION");
+    println ("STOP - No PORT CONNECTION");
+    println ("STOP - No PORT CONNECTION");
+    println ("STOP - No PORT CONNECTION");
+    println ("STOP - No PORT CONNECTION");
+    println ("Exception = "+ae);  // print it
+    println ("-------------------------");
+    println ("-------------------------");
+  }
+  // <<<<<<<
+
+  // >>>>>>> set up fonts
   //PFont font = createFont("arial",20);
   font = new ControlFont(createFont("arial", 100), 15);
+  // <<<<<<<
 
-  // ------------------
+  // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  set up GUI elements >>>>>>>>>>>>>>>>>>>>
   noStroke();
   cp5 = new ControlP5(this); // adds in a control instance to add buttons and text field to
-
-
-
   noStroke();
   tf = cp5.addTextfield("Enter your twitter username");
   tf.setPosition(10, 475);
@@ -123,7 +142,7 @@ void setup() {
   tf.setText ("@");
   tf.captionLabel().setControlFont(font);
   // @@@ 
-  tfRand = cp5.addTextfield("Enter random msg text");
+  tfRand = cp5.addTextfield("Enter random msg text"); // where you add in tweet text strings
   tfRand.setPosition(10, 415);
   // tf.setStringValue("@");
   tfRand.setSize(250, 25);
@@ -150,8 +169,6 @@ void setup() {
   //tfAlert.setVisible(false) 
   tfAlert.captionLabel().setControlFont(font);
 
-
-
   // create a new button with name 'Tell my Fortune'
   b = cp5.addButton("Press to tell your fortune", 20, 100, 50, 80, 20);
   b.setId(2);  // id to target this element
@@ -166,64 +183,78 @@ void setup() {
   b.isOn();
 
 
-  //
+  // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end of GUI <<<<<<<<<<
 
 
-  // -----------------
-
+  // >>>>>>>>
   smooth();
   // Now call tweeting action functions...
   grabTweets();
   println ("finished grabbing tweets");
   println ();
-  
-}
-  
+}  // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end of setup()  <<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
 void draw() {
-  //Draw a faint black rectangle over what is currently on the stage so it fades over time.
+
+  // >>>>>> Draw a faint black rectangle over what is currently on the stage so it fades over time.
   fill(0, 20); // change the latter number to make the fade deeper (from 1 to 20 is good)
   rect(0, 0, width, height);
-  // ---------------
-  // WORDS
-  //Draw a word from the list of words that we've built
-  
+  // <<<<<<
 
+  // >>>>>>> WORDS
+  // Draw a word from the list of words that we've built (using FRAMECOUNT - THIS INCREMENTS BY +1 EVERY REDRAW - %=MODULO)
   int i = (frameCount % words.size());
   String word = words.get(i);
-  // HASHTAGS
+  println ("word = "+word+" #"+i);
+  // <<<<<<<
+
+  // >>>>>>> HASHTAGS
   //Draw a hashtag from the list of words that we've built
   int j = (frameCount % hashtags.size());
   String hashtag = hashtags.get(j);
-  
-  // USERNAMES
+  // <<<<<<<
+
+  // >>>>>> USERNAMES
   //Draw a username from the list of words that we've built
   int k = (frameCount % usernames.size());
   String username = usernames.get(k);
-  
-  // URLS
+  // <<<<<<
+
+  // >>>>>> URLS
   //Draw a url from the list of words that we've built
   int l = (frameCount % urls.size());
   String url = urls.get(l);
-  
+  // <<<<<<
+
   // create a random fortune ---
-   println ("testFortune= Think about: "+words.get(int(random(i)))+" or talk to "+usernames.get(int(random(k)))+" or visit "+urls.get(int(random(l)))+". Totally "+hashtags.get(int(random(j))));
- 
+  // println ("testFortune= Think about: "+words.get(int(random(i)))+" or talk to "+usernames.get(int(random(k)))+" or visit "+urls.get(int(random(l)))+". Totally "+hashtags.get(int(random(j))));
+
   //-------------
-  //Put it somewhere random on the stage, with a random size and colour
+  // >>>>> Put url somewhere random on the stage, with a random size and colour
   fill(255, random(50, 150));
-  textSize(random(10,20));
-  // next line is what is getting printed to the screen... 
-  text(url, random(width), random(height));
-  fill(255, random(50,150));
+  textSize(random(10, 20)); 
+  text(url, random(width), random(height)); // 
+  // <<< SEND URL TO THE SCREEN
+  
+  // >>> SEND HASHTAG TO THE SCREEN WITH DIFFERENT SIZE ETC 
+  fill(255, random(50, 150));
   textSize(random(10, 15));
   text("#"+hashtag, random(width), random (height));
-   textSize(random(15, 30));
-  text(word, random(width), random (height));
-   fill(255, random(50, 100));
-   textSize(random(10,15));
-text("@"+username, random(width), random (height));
+  // <<< END SEND HASHTAG#
   
- 
+  // >>>SEND WORD TO SCREEN ALSO WITH DIFFERENT SETTINGS
+  textSize(random(15, 30));
+  text(word, random(width), random (height));
+  // <<< END SEND WORD
+  
+  // >>> SEND USERNAME TO SCREEN
+  fill(255, random(50, 100));
+  textSize(random(10, 15));
+  text("@"+username, random(width), random (height));
+  // <<< END SEND USERNAME
+
+
   // --------------
   // --------------
   // following is for text boxes
@@ -235,7 +266,7 @@ text("@"+username, random(width), random (height));
   buttonCheck(tfTextCurrent); // on screen check button every loop 
   checkSerial() ; // check serial port every loop
 }
-
+// >>>>>>>>>>>>>>>>>>>>>>>> SEND THAT TWEET >>>>>>>>>>>>>>>
 void sendTweet (String tweetText) {
   //@@@
   timerT=millis();  // reset the timer each time
@@ -277,7 +308,9 @@ void sendTweet (String tweetText) {
     b.setWidth (250);
   }
 }
+// <<<<<<<<<<<<<<<<<<<<<<<<< END SEND TWEETS <<<<<<<<<<<<<<<
 
+// >>>>>>>>>>>>>>>>>>>>>>>>> GRAB THOSE TWEETS  >>>>>>>>>>>>>
 void grabTweets() {
   //Credentials
   ConfigurationBuilder cb = new ConfigurationBuilder();
@@ -297,134 +330,128 @@ void grabTweets() {
     QueryResult result = twitter.search(query); // gets the query
     ArrayList tweets = (ArrayList) result.getTweets(); // creates an array to store tweets in
     // then fills it up!
+    println ("number of tweets = "+tweets.size());
     for (int i = 0; i < tweets.size(); i++) {
       Tweet t = (Tweet) tweets.get(i);
       String user = t.getFromUser();
       String msg = t.getText();
       Date d = t.getCreatedAt();
-      println("Tweet by " + user + " at " + d + ": " + msg);
+      println("Tweet #"+i+" by " + user + " at " + d + ": " + msg);
 
       //Break the tweet into words
       String[] input = msg.split(" ");
       for (int j = 0;  j < input.length; j++) {
-        //  Put each word into the words ArrayList
+        //Put each word into the words ArrayList
+        //@@@@@
+        //for (int ii = 0 ; ii < words.length; ii++) {
+        //println("stopWords["+ii+"]= "+stopWords[ii]);
+
         words.add(input[j]);
+        //println("words["+j+"] ="+input[j]);
+        //}
+        // @@@@@
         //  Check each word and if starts with a # add to a list of hashtags
-        println("--------------- start");
+        //println("--------------- start");
+
+        // >>>>>> make the list of hashtags
         String hashtag= input[j];
-        println ("hashtag= "+hashtag);
+        //println ("hashtag= "+hashtag);
         String hashtagArray[] = hashtag.split("#");
-        println ("hashtagArray = ");
-        println(hashtagArray);
-        println();
         if (hashtagArray.length>1)
         {
-          println ("inside checker");
+          //println ("inside checker");
           hashtags.add(hashtagArray[1]);
-          println ("hashtagArray["+j+"]= "+hashtagArray[1]);
-          println();
-
-          println();
+          //println ("hashtagArray["+j+"]= "+hashtagArray[1]);
         }
-        // @@@@@@@@@@@@@@@@@@@@@@@@@@@
+        // <<<<<<<
+
+        // >>>>>>> set up list of usernames
         String username= input[j];
-        println ("username= "+username);
         String usernameArray[] = username.split("@");
-        println ("usernameArray = ");
-        println(usernameArray);
-        println();
+        // println ("usernameArray = ");
+        //println (usernameArray);
         if (usernameArray.length>1)
         {
-          println ("inside checker");
           usernames.add(usernameArray[1]);
-          println ("usernameArray["+j+"]= "+usernameArray[1]);
-          println();
+          // println ("usernameArray["+j+"]= "+usernameArray[1]);
         }
-        
-        // @@@@@@@@@@@@@@@@@@@@@@@@@@@
-        //@@=====
+        // <<<<<<<<
+
+        // >>>>>>>> set up urls >>>>>>
         String url =input[j];
         String urlArray[] = url.split("h");
         if (urlArray.length>1)
         {
-          
-          println ("urlArray["+j+"]= "+urlArray[1]);
           String urlArray2[] = urlArray[1].split("t");
-            if (urlArray2.length>2)
-        {
-           urls.add(url);
+          if (urlArray2.length>2)
+          {
+            urls.add(url);
+          }
+          // <<<<<<<<<< end
+
+          // >>>>>>>>>>
         }
-          println("@@@@@@@@@@@@@@@@@@@@@@@@");
-
-          println();
-        } 
-        //========
-        println("------------- end");
-        println();
-
-        //@@
       }
     };
-  }
+  } // <<<<<< end try 
   catch (TwitterException te) {
     println("Couldn't connect: " + te);
-  };
-}
+  }; // <<<<<< end catch
+} // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end grabTweets() <<<<<<<<
 
+// >>>>>>>>>>>>>>>>>>>
 void buttonCheck(String tweetTextIntro)
 {
-
   if (b.isPressed()) {
-
     println("button being pressed");
     sendTweet ("digital (onscreen) Button");
     b.setWidth(50);
     // action for onscreen button press
   }
 }
+// <<<<<<<<<<<<<<<<<<<<<<< end of BUTTONCHECK
 
+// >>>>>>>>>>>>>>> check the open serial port >>>>>>>>>>
 void checkSerial() {
   try {
-  while (port.available () > 0) {
-
-    String inByte = port.readString();
-    println ("Safe from OUSIDE IF . inByte = "+inByte);
-    int w=int(random(150));
-    b.setWidth(w);
-
-
-    println ();
-
-    port.clear();
-    sendTweet ("physical Button");
-  }
+    // >>>>>> see if the port is sending you stuff
+    while (port.available () > 0) {
+      String inByte = port.readString();
+      println ("Safe from OUSIDE IF . inByte = "+inByte);
+      int w=int(random(150));
+      b.setWidth(w);
+      println ();
+      port.clear();
+      sendTweet ("physical Button");
+    }
   } // end try
   catch (NullPointerException npe) {
     println ("Check serial exception = "+npe);
   }
-  
-}
+} // <<<<<<<<<<<<<<<<<<<<< end checkSerial <<<<<<<<<<<<<<<<<<<<<
 
+
+// >>>>>>>>>>>>>>>>>>> load remote  admin settings   >>>>>>>>>>>>>>
 void loadRemoteAdminSettings ()
 {
-  String [] texty = loadStrings("https://spreadsheets.google.com/feeds/list/0AgTXh43j7oFVdC12aXp1M1lJQ0JUYlF2RWtJa1RBVGc/od6/public/basic?alt=rss");
-println (texty);
-String paas []= split (texty [0],':');
-String hashtag[]=split (paas[27], ',');
-String username[]=split (paas[28], ',');
+  adminSettings = loadStrings("https://docs.google.com/spreadsheet/pub?key=0AgTXh43j7oFVdFNOcGtMaXZnS3IwdTJacllUT1hLQUE&output=txt");
+   if (loadSettingsCheckInt==true)
+  {  for (int i = 0 ; i < adminSettings.length; i++) {
+      println("adminSettings["+i+"]= "+adminSettings[i]);
+    }
+     loadSettingsCheckInt =false;
+  }
+}
 
-String searchterm[]=split (paas[29], ',');
-
-String ppm[]=split (paas[30], ',');
-adminSettings [0]= hashtag[0];
-println ("hashtag loaded remotely as "+hashtag[0]);
-
-adminSettings [1]= username[0];
-println ("username loaded remotely as "+username[0]);
-
-adminSettings [2]= searchterm[0];
-println ("searchterm loaded remotely as "+searchterm[0]);
-
-adminSettings [3]= ppm[0];
-println ("PPM loaded remotely as "+ppm[0]);
+// >>>>
+void loadRemoteStopWords ()
+{
+  String stopWords [] = loadStrings("https://docs.google.com/spreadsheet/pub?key=0AgTXh43j7oFVdFByYk41am9jRnRkeU9LWnhjZFJTOEE&output=txt");
+  if (loadstopWordsCheckInt==true)
+  {
+    for (int i = 0 ; i < stopWords.length; i++) {
+      println("stopWords["+i+"]= "+stopWords[i]);
+    }
+    loadstopWordsCheckInt=false;
+  }
 }
