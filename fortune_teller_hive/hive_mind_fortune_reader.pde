@@ -234,24 +234,25 @@ void draw() {
 
   //-------------
   // >>>>> Put url somewhere random on the stage, with a random size and colour
-  fill(255, random(50, 150));
+  fill(0,25,89, 255);
   textSize(random(10, 20)); 
   text(url, random(width), random(height)); // 
   // <<< SEND URL TO THE SCREEN
 
   // >>> SEND HASHTAG TO THE SCREEN WITH DIFFERENT SIZE ETC 
-  fill(255, random(50, 150));
+  fill(255, 0,0,255);
   textSize(random(10, 15));
   text("#"+hashtag, random(width), random (height));
   // <<< END SEND HASHTAG#
 
   // >>>SEND WORD TO SCREEN ALSO WITH DIFFERENT SETTINGS
   textSize(random(15, 30));
+  fill(255,255);
   text(word, random(width), random (height));
   // <<< END SEND WORD
 
   // >>> SEND USERNAME TO SCREEN
-  fill(255, random(50, 100));
+  fill(0,255, 22,random(50, 100));
   textSize(random(10, 15));
   text("@"+username, random(width), random (height));
   // <<< END SEND USERNAME
