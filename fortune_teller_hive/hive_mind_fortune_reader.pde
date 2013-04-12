@@ -372,6 +372,7 @@ void grabTweets() {
         {
           //println ("inside checker");
           hashtags.add(hashtagArray[1]);
+          words.remove(hashtagArray[1]);
           //println ("hashtagArray["+j+"]= "+hashtagArray[1]);
         }
         // <<<<<<<
@@ -384,6 +385,7 @@ void grabTweets() {
         if (usernameArray.length>1)
         {
           usernames.add(usernameArray[1]);
+          words.remove(usernameArray[1]);
           // println ("usernameArray["+j+"]= "+usernameArray[1]);
         }
         // <<<<<<<<
@@ -397,6 +399,7 @@ void grabTweets() {
           if (urlArray2.length>2)
           {
             urls.add(url);
+            words.remove(url);
           }
           // <<<<<<<<<< end
 
