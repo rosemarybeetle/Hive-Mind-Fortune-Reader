@@ -354,15 +354,9 @@ void grabTweets() {
           }
         }
       }
-       for (int j = 0;  j < cleanTweets.size(); j++) {
+      println ("cleanTweets = "+cleanTweets);
+    }for (int j = 0;  j < cleanTweets.size(); j++) {
         words.add(cleanTweets.get(j));
-     
-
-        //println("words["+j+"] ="+input[j]);
-        //}
-        // @@@@@
-        //  Check each word and if starts with a # add to a list of hashtags
-        //println("--------------- start");
 
         // >>>>>> make the list of hashtags
         String hashtag= cleanTweets.get(j);
@@ -404,9 +398,11 @@ void grabTweets() {
           // <<<<<<<<<< end
 
           // >>>>>>>>>>
-        }
+        
       }
     };
+    println ("LLLLLLLLLLLLLL");
+    println ("words = "+words);
   } // <<<<<< end try 
   catch (TwitterException te) {
     println("Couldn't connect: " + te);
