@@ -47,12 +47,12 @@ String tfTextCurrent =""; // used to check what is in the free-text text box
 // <<<<<<
 
 // >>>>>> Build an ArrayList to hold all of the words that we get from the imported tweets
+ArrayList<String> stopWords = new ArrayList();
+ArrayList<String> cleanTweets = new ArrayList();
 ArrayList<String> words = new ArrayList(); 
 ArrayList<String> hashtags = new ArrayList();
 ArrayList<String> usernames = new ArrayList();
 ArrayList<String> urls = new ArrayList();
-ArrayList<String> cleanTweets = new ArrayList();
-ArrayList<String> stopWords = new ArrayList();
 // <<<<<<
 
 // >>>>> adminSetting
@@ -193,6 +193,7 @@ void setup() {
   grabTweets();
   println ("finished grabbing tweets");
   println ();
+  println ();
 }  // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end of setup()  <<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
@@ -237,18 +238,18 @@ void draw() {
   textSize(random(10, 20)); 
   text(url, random(width), random(height)); // 
   // <<< SEND URL TO THE SCREEN
-  
+
   // >>> SEND HASHTAG TO THE SCREEN WITH DIFFERENT SIZE ETC 
   fill(255, random(50, 150));
   textSize(random(10, 15));
   text("#"+hashtag, random(width), random (height));
   // <<< END SEND HASHTAG#
-  
+
   // >>>SEND WORD TO SCREEN ALSO WITH DIFFERENT SETTINGS
   textSize(random(15, 30));
   text(word, random(width), random (height));
   // <<< END SEND WORD
-  
+
   // >>> SEND USERNAME TO SCREEN
   fill(255, random(50, 100));
   textSize(random(10, 15));
@@ -323,7 +324,7 @@ void grabTweets() {
   //Make the twitter object and prepare the query
   Twitter twitter = new TwitterFactory(cb.build()).getInstance();
   Query query = new Query(adminSettings[0]); // this is assuming you check the first of 4 admin settings, but should be extended to include passing a selctor param
-  
+
   query.setRpp(int(adminSettings[3])); // rrp is the number of tweets returned per page
   // The factory instance is re-useable and thread safe.
 
@@ -332,7 +333,7 @@ void grabTweets() {
     QueryResult result = twitter.search(query); // gets the query
     ArrayList tweets = (ArrayList) result.getTweets(); // creates an array to store tweets in
     // then fills it up!
-    
+
     println ("number of tweets = "+tweets.size());
     for (int i = 0; i < tweets.size(); i++) {
       Tweet t = (Tweet) tweets.get(i);
@@ -344,12 +345,19 @@ void grabTweets() {
       //Break the tweet into words
       String[] input = msg.split(" ");
       for (int j = 0;  j < input.length; j++) {
-        //Put each word into the words ArrayList
-        //@@@@@
-        //for (int ii = 0 ; ii < words.length; ii++) {
-        //println("stopWords["+ii+"]= "+stopWords[ii]);
+        cleanTweets.add(input[j]);
+        for (int ii = 0 ; ii < stopWords.size(); ii++) {
 
-        words.add(input[j]);
+          if (stopWords.get(ii).equals(input[j])) {
+            cleanTweets.remove(input[j]);
+            println("Word removed due to matched stopword: "+input[j]);
+          }
+        }
+      }
+       for (int j = 0;  j < cleanTweets.size(); j++) {
+        words.add(cleanTweets.get(j));
+     
+
         //println("words["+j+"] ="+input[j]);
         //}
         // @@@@@
@@ -357,7 +365,7 @@ void grabTweets() {
         //println("--------------- start");
 
         // >>>>>> make the list of hashtags
-        String hashtag= input[j];
+        String hashtag= cleanTweets.get(j);
         //println ("hashtag= "+hashtag);
         String hashtagArray[] = hashtag.split("#");
         if (hashtagArray.length>1)
@@ -369,7 +377,7 @@ void grabTweets() {
         // <<<<<<<
 
         // >>>>>>> set up list of usernames
-        String username= input[j];
+        String username= cleanTweets.get(j);
         String usernameArray[] = username.split("@");
         // println ("usernameArray = ");
         //println (usernameArray);
@@ -381,7 +389,7 @@ void grabTweets() {
         // <<<<<<<<
 
         // >>>>>>>> set up urls >>>>>>
-        String url =input[j];
+        String url = cleanTweets.get(j);
         String urlArray[] = url.split("h");
         if (urlArray.length>1)
         {
@@ -438,11 +446,12 @@ void checkSerial() {
 void loadRemoteAdminSettings ()
 {
   adminSettings = loadStrings("https://docs.google.com/spreadsheet/pub?key=0AgTXh43j7oFVdFNOcGtMaXZnS3IwdTJacllUT1hLQUE&output=txt");
-   if (loadSettingsCheckInt==true)
-  {  for (int i = 0 ; i < adminSettings.length; i++) {
+  if (loadSettingsCheckInt==true)
+  {  
+    for (int i = 0 ; i < adminSettings.length; i++) {
       println("adminSettings["+i+"]= "+adminSettings[i]);
     }
-     loadSettingsCheckInt =false;
+    loadSettingsCheckInt =false;
   }
 }
 
@@ -455,8 +464,7 @@ void loadRemoteStopWords ()
     for (int i = 0 ; i < stopWordsLoader.length; i++) {
       //stop
       stopWords.add(stopWordsLoader[i]);
-        println("stopWords["+i+"]= "+stopWords.get(i)+". Length now: "+stopWords.size());
-    
+      println("stopWords["+i+"]= "+stopWords.get(i)+". Length now: "+stopWords.size());
     }
     loadstopWordsCheckInt=false;
   }
