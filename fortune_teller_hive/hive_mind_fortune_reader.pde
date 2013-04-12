@@ -44,6 +44,11 @@ String fortuneGreeting = "Hello. I have stared deep. into the hive mind. Your fo
 // >>>>>>
 String tfUserCurrent =""; // used to check what is in the username text box
 String tfTextCurrent =""; // used to check what is in the free-text text box
+int valFocus = 0; // default
+color focusBackgroundColor = color (255, 255, 00);
+color focusOffBackgroundColor = color (0, 0, 0);
+color focusOffColor = focusBackgroundColor ;
+color focusColor = focusOffBackgroundColor;
 // <<<<<<
 
 // >>>>>> Build an ArrayList to hold all of the words that we get from the imported tweets
@@ -136,10 +141,11 @@ void setup() {
   tf.setPosition(10, 475);
   // tf.setStringValue("@");
   tf.setSize(250, 25);
+  tf.setColorBackground(focusBackgroundColor);
+  tf.setColor(focusColor);
   tf.setFont(font);
   tf.setFocus(true);
   //tf.setAutoClear(true);
-  tf.setColor(color(255, 255, 255));
   tf.setText ("@");
   tf.captionLabel().setControlFont(font);
   // @@@ 
@@ -147,10 +153,12 @@ void setup() {
   tfRand.setPosition(10, 415);
   // tf.setStringValue("@");
   tfRand.setSize(250, 25);
+  tfRand.setColorBackground(focusOffBackgroundColor);
+  tfRand.setColor(focusOffColor);
+
   tfRand.setFont(font);
   tfRand.setFocus(false);
   //tf.setAutoClear(true);
-  tfRand.setColor(color(255, 255, 255));
   tfRand.setText ("");
   tfRand.captionLabel().setControlFont(font);
 
@@ -182,6 +190,9 @@ void setup() {
   b.captionLabel().style().marginTop = 1;
   b.setVisible(true);
   b.isOn();
+   b.setColorBackground(focusOffBackgroundColor);
+  
+
 
 
   // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end of GUI <<<<<<<<<<
@@ -209,6 +220,11 @@ void draw() {
   int i = (frameCount % words.size());
   String word = words.get(i);
   println ("word = "+word+" #"+i);
+  /*if (i==1)
+   {
+   grabTweets();
+   }
+   */
   // <<<<<<<
 
   // >>>>>>> HASHTAGS
@@ -234,26 +250,26 @@ void draw() {
 
   //-------------
   // >>>>> Put url somewhere random on the stage, with a random size and colour
-  fill(0,25,89, 255);
-  textSize(random(10, 20)); 
+  fill(0, 25, 89, 255);
+  textSize(random(15, 20)); 
   text(url, random(width), random(height)); // 
   // <<< SEND URL TO THE SCREEN
 
   // >>> SEND HASHTAG TO THE SCREEN WITH DIFFERENT SIZE ETC 
-  fill(255, 0,0,255);
-  textSize(random(10, 15));
+  fill(255, 0, 0, 255);
+  textSize(random(15, 25));
   text("#"+hashtag, random(width), random (height));
   // <<< END SEND HASHTAG#
 
   // >>>SEND WORD TO SCREEN ALSO WITH DIFFERENT SETTINGS
-  textSize(random(15, 30));
-  fill(255,255);
+  textSize(random(15, 35));
+  fill(255, 255);
   text(word, random(width), random (height));
   // <<< END SEND WORD
 
   // >>> SEND USERNAME TO SCREEN
-  fill(0,255, 22,random(50, 100));
-  textSize(random(10, 15));
+  fill(0, 255, 22, 255);
+  textSize(random(15, 25));
   text("@"+username, random(width), random (height));
   // <<< END SEND USERNAME
 
@@ -356,50 +372,50 @@ void grabTweets() {
         }
       }
       println ("cleanTweets = "+cleanTweets);
-    }for (int j = 0;  j < cleanTweets.size(); j++) {
-        words.add(cleanTweets.get(j));
+    }
+    for (int j = 0;  j < cleanTweets.size(); j++) {
+      words.add(cleanTweets.get(j));
 
-        // >>>>>> make the list of hashtags
-        String hashtag= cleanTweets.get(j);
-        //println ("hashtag= "+hashtag);
-        String hashtagArray[] = hashtag.split("#");
-        if (hashtagArray.length>1)
+      // >>>>>> make the list of hashtags
+      String hashtag= cleanTweets.get(j);
+      //println ("hashtag= "+hashtag);
+      String hashtagArray[] = hashtag.split("#");
+      if (hashtagArray.length>1)
+      {
+        //println ("inside checker");
+        hashtags.add(hashtagArray[1]);
+        words.remove(hashtagArray[1]);
+        //println ("hashtagArray["+j+"]= "+hashtagArray[1]);
+      }
+      // <<<<<<<
+
+      // >>>>>>> set up list of usernames
+      String username= cleanTweets.get(j);
+      String usernameArray[] = username.split("@");
+      // println ("usernameArray = ");
+      //println (usernameArray);
+      if (usernameArray.length>1)
+      {
+        usernames.add(usernameArray[1]);
+        words.remove(usernameArray[1]);
+        // println ("usernameArray["+j+"]= "+usernameArray[1]);
+      }
+      // <<<<<<<<
+
+      // >>>>>>>> set up urls >>>>>>
+      String url = cleanTweets.get(j);
+      String urlArray[] = url.split("h");
+      if (urlArray.length>1)
+      {
+        String urlArray2[] = urlArray[1].split("t");
+        if (urlArray2.length>2)
         {
-          //println ("inside checker");
-          hashtags.add(hashtagArray[1]);
-          words.remove(hashtagArray[1]);
-          //println ("hashtagArray["+j+"]= "+hashtagArray[1]);
+          urls.add(url);
+          words.remove(url);
         }
-        // <<<<<<<
+        // <<<<<<<<<< end
 
-        // >>>>>>> set up list of usernames
-        String username= cleanTweets.get(j);
-        String usernameArray[] = username.split("@");
-        // println ("usernameArray = ");
-        //println (usernameArray);
-        if (usernameArray.length>1)
-        {
-          usernames.add(usernameArray[1]);
-          words.remove(usernameArray[1]);
-          // println ("usernameArray["+j+"]= "+usernameArray[1]);
-        }
-        // <<<<<<<<
-
-        // >>>>>>>> set up urls >>>>>>
-        String url = cleanTweets.get(j);
-        String urlArray[] = url.split("h");
-        if (urlArray.length>1)
-        {
-          String urlArray2[] = urlArray[1].split("t");
-          if (urlArray2.length>2)
-          {
-            urls.add(url);
-            words.remove(url);
-          }
-          // <<<<<<<<<< end
-
-          // >>>>>>>>>>
-        
+        // >>>>>>>>>>
       }
     };
     println ("LLLLLLLLLLLLLL");
@@ -415,7 +431,7 @@ void buttonCheck(String tweetTextIntro)
 {
   if (b.isPressed()) {
     println("button being pressed");
-    sendTweet ("digital (onscreen) Button");
+    sendTweet ("digital (onscreen) Button MOUSE");
     b.setWidth(50);
     // action for onscreen button press
   }
@@ -459,6 +475,7 @@ void loadRemoteAdminSettings ()
 void loadRemoteStopWords ()
 {
   String stopWordsLoader [] = loadStrings("https://docs.google.com/spreadsheet/pub?key=0AgTXh43j7oFVdFByYk41am9jRnRkeU9LWnhjZFJTOEE&output=txt");
+
   if (loadstopWordsCheckInt==true)
   {
     for (int i = 0 ; i < stopWordsLoader.length; i++) {
@@ -467,5 +484,39 @@ void loadRemoteStopWords ()
       println("stopWords["+i+"]= "+stopWords.get(i)+". Length now: "+stopWords.size());
     }
     loadstopWordsCheckInt=false;
+  }
+}
+void keyReleased() {
+  if (key==TAB) {
+    println ("Tab key released");
+
+    tfToggleFocus(valFocus);
+  } 
+  else if  ((key == ENTER )|(key == RETURN)){
+    sendTweet("press enter/return");
+  }
+  
+}
+
+void tfToggleFocus (int val)
+{
+  if (val==0)
+  {
+    tf.setFocus(true);
+    tfRand.setFocus(false);
+    tfRand.setColorBackground(focusOffBackgroundColor);
+    tfRand.setColor(focusOffColor);
+    tf.setColorBackground(focusBackgroundColor);
+    tf.setColor(focusColor);
+    valFocus=1;
+  }
+  else if (val==1) {
+    tf.setFocus(false);
+    tfRand.setFocus(true);
+    tfRand.setColor(focusColor);
+    tfRand.setColorBackground(focusBackgroundColor);
+    tf.setColorBackground(focusOffBackgroundColor);
+    tf.setColor(focusOffColor);
+    valFocus=0;
   }
 }
