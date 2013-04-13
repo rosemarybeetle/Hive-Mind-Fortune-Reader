@@ -35,7 +35,6 @@ boolean loadstopWordsCheckInt=true;
 // <<<<<< end load flags
 
 //  >>>>> fortune textxs - make these external later #enhancement
-String tweetTextIntro = "Hive fortune reading for ";
 int tweetTextOutro = int (random(99));
 String tweetSendTrigger ="fireTweet";
 String fortuneGreeting = "Hello. I have stared deep. into the hive mind. Your fortune reading is."; 
@@ -64,6 +63,8 @@ ArrayList<String> urls = new ArrayList();
 String adminSettings [] = {
   "#hivemind", "@rosemarybeetle", "weird", "100"
 }; 
+    String tweetTextIntro="";
+    String readingSettingText="";
 // <<<<<< fill with defaults in case remote settings don't load 
 
 // >>>>>> GUI library and settiongs
@@ -96,6 +97,7 @@ float delayCheck; //delayCheck; // THIS IS IMPORTANT. it i what stops overpollin
 
 
 void setup() {
+  updateReadingSettings();
   tts = new TTS();
   loadRemoteAdminSettings(); // loads Twitter serch parameters from remote Google spreadsheet
   loadRemoteStopWords();// load list of stop words into an array, loaded from a remote spreadsheet
@@ -165,7 +167,7 @@ void setup() {
   // @@@
 
   tfAlert = cp5.addTextlabel("please wait");
-  tfAlert.setPosition(150, 400);
+  tfAlert.setPosition(10, 400);
   tfAlert.setSize(250, 25);
   tfAlert.setFont(font);
 
@@ -173,7 +175,7 @@ void setup() {
   tfAlert.setColor(color(255, 255, 255));
   tfAlert.getCaptionLabel().align(ControlP5.CENTER, ControlP5.CENTER);
 
-  tfAlert.setText ("Reading the twitter hive mind");
+  tfAlert.setText ("Psychic reading for "+readingSettingText);
 
   //tfAlert.setVisible(false) 
   tfAlert.captionLabel().setControlFont(font);
@@ -287,6 +289,7 @@ void draw() {
 }
 // >>>>>>>>>>>>>>>>>>>>>>>> SEND THAT TWEET >>>>>>>>>>>>>>>
 void sendTweet (String tweetText) {
+  updateReadingSettings();
   //@@@
   timerT=millis();  // reset the timer each time
 
@@ -299,6 +302,8 @@ void sendTweet (String tweetText) {
 
     println("tweet being sent");
     println("tfUserCurrent = "+ tfUserCurrent);
+    tweetTextIntro = "Psychic reading for "+readingSettingText;
+
     String fortune = tweetTextIntro + tfUserCurrent + " from "+tweetText+ ", " +tfTextCurrent+". "+tweetTextOutro;
     String fortuneSpoken = (fortuneGreeting + tfUserCurrent+ "How. do. you. feel about. "+fortune);
     tts.speak(fortuneSpoken);
@@ -469,6 +474,7 @@ void loadRemoteAdminSettings ()
     }
     loadSettingsCheckInt =false;
   }
+  updateReadingSettings();
 }
 
 // >>>>
@@ -519,4 +525,26 @@ void tfToggleFocus (int val)
     tf.setColor(focusOffColor);
     valFocus=0;
   }
+}
+void updateReadingSettings() {
+String currentHashtag = adminSettings [0];
+String displayHashtag = "hashtag = "+adminSettings [0]+"   ";
+if (adminSettings[0]=="")
+{
+  displayHashtag="";
+}
+String currentUserName = adminSettings [1];
+String displayUserName = "@username = "+adminSettings [1]+"   ";
+if (adminSettings[1]=="")
+{
+  displayUserName="";
+}
+String currentSearchTerms = adminSettings [2];
+String displaySearchTerms = "search = "+adminSettings [2];
+if (adminSettings[1]=="")
+{
+  displayUserName="";
+}
+readingSettingText = displayHashtag+displayUserName+displaySearchTerms;
+
 }
