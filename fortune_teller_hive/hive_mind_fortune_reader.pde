@@ -1,7 +1,7 @@
 // -----------------------
 // ----
 // Hive-Mind Fortune-Reader
-// This sketch is the mind control or an automaton that can read the collective mind of twitter activity
+// This sketch is the mind control of an automaton that can read the collective mind of twitter activity
 // And feed it back to a physical automaton to create fortune readings...
 //
 // This is based on code by  @@@ Jer Thorp @@@
@@ -57,14 +57,15 @@ ArrayList<String> words = new ArrayList();
 ArrayList<String> hashtags = new ArrayList();
 ArrayList<String> usernames = new ArrayList();
 ArrayList<String> urls = new ArrayList();
+String uberWords [] = new String[0];
 // <<<<<<
 
 // >>>>> adminSetting
 String adminSettings [] = {
-  "#hivemind", "@rosemarybeetle", "weird", "100"
+  "#hivemind", "@rosemarybeetle", "weird", "100", "60000"
 }; 
-    String tweetTextIntro="";
-    String readingSettingText="";
+String tweetTextIntro="";
+String readingSettingText="";
 // <<<<<< fill with defaults in case remote settings don't load 
 
 // >>>>>> GUI library and settiongs
@@ -86,6 +87,7 @@ TTS tts; // create an instance called 'tts'
 
 // >>>>>>> import standard processing Serial library 
 import processing.serial.*;
+
 Serial port; // create an instance called 'port'
 // <<<<<<<
 
@@ -192,8 +194,8 @@ void setup() {
   b.captionLabel().style().marginTop = 1;
   b.setVisible(true);
   b.isOn();
-   b.setColorBackground(focusOffBackgroundColor);
-  
+  b.setColorBackground(focusOffBackgroundColor);
+
 
 
 
@@ -392,7 +394,7 @@ void grabTweets() {
         words.remove(hashtagArray[1]);
         //println ("hashtagArray["+j+"]= "+hashtagArray[1]);
       }
-      // <<<<<<<
+        // <<<<<<<
 
       // >>>>>>> set up list of usernames
       String username= cleanTweets.get(j);
@@ -425,10 +427,17 @@ void grabTweets() {
     };
     println ("LLLLLLLLLLLLLL");
     println ("words = "+words);
+    
+    for(int p =0;p<words.size(); p++)
+    {
+      uberWords  = append (uberWords,words.get(p).toString());
+    }
+    saveStrings ("words.txt",uberWords);
   } // <<<<<< end try 
   catch (TwitterException te) {
     println("Couldn't connect: " + te);
   }; // <<<<<< end catch
+  
 } // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end grabTweets() <<<<<<<<
 
 // >>>>>>>>>>>>>>>>>>>
@@ -498,10 +507,9 @@ void keyReleased() {
 
     tfToggleFocus(valFocus);
   } 
-  else if  ((key == ENTER )|(key == RETURN)){
+  else if  ((key == ENTER )|(key == RETURN)) {
     sendTweet("press enter/return");
   }
-  
 }
 
 void tfToggleFocus (int val)
@@ -527,24 +535,23 @@ void tfToggleFocus (int val)
   }
 }
 void updateReadingSettings() {
-String currentHashtag = adminSettings [0];
-String displayHashtag = "hashtag = "+adminSettings [0]+"   ";
-if (adminSettings[0]=="")
-{
-  displayHashtag="";
-}
-String currentUserName = adminSettings [1];
-String displayUserName = "@username = "+adminSettings [1]+"   ";
-if (adminSettings[1]=="")
-{
-  displayUserName="";
-}
-String currentSearchTerms = adminSettings [2];
-String displaySearchTerms = "search = "+adminSettings [2];
-if (adminSettings[1]=="")
-{
-  displayUserName="";
-}
-readingSettingText = displayHashtag+displayUserName+displaySearchTerms;
-
+  String currentHashtag = adminSettings [0];
+  String displayHashtag = "hashtag = "+adminSettings [0]+"   ";
+  if (adminSettings[0]=="")
+  {
+    displayHashtag="";
+  }
+  String currentUserName = adminSettings [1];
+  String displayUserName = "@username = "+adminSettings [1]+"   ";
+  if (adminSettings[1]=="")
+  {
+    displayUserName="";
+  }
+  String currentSearchTerms = adminSettings [2];
+  String displaySearchTerms = "search = "+adminSettings [2];
+  if (adminSettings[1]=="")
+  {
+    displayUserName="";
+  }
+  readingSettingText = displayHashtag+displayUserName+displaySearchTerms;
 }
