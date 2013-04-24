@@ -57,7 +57,7 @@ ArrayList<String> words = new ArrayList();
 ArrayList<String> hashtags = new ArrayList();
 ArrayList<String> usernames = new ArrayList();
 ArrayList<String> urls = new ArrayList();
-String uberWords [] = new String[0];
+String uberWords [] = new String[0]; //massive array to build up history of words harvested
 // <<<<<<
 
 // >>>>> adminSetting
@@ -67,6 +67,11 @@ String adminSettings [] = {
 String tweetTextIntro="";
 String readingSettingText="";
 // <<<<<< fill with defaults in case remote settings don't load 
+
+// >>>>>>  grabTweets Timer settings  >>>>>>>>>>>
+float grabTime = millis();
+float timeNow =millis();
+String stamp = year()+"-"+month()+"-"+day()+"-"+hour()+"-"+minute();// <<<<<<
 
 // >>>>>> GUI library and settiongs
 import controlP5.*; // import the GUI library
@@ -213,7 +218,13 @@ void setup() {
 
 
 void draw() {
-
+ timeNow=millis();
+ println ("timeNow-grabTime = "+(timeNow-grabTime));
+ 
+  if ((timeNow-grabTime)>float(adminSettings[4])) {
+   grabTweets();
+   grabTime=millis(); // reset grabTime
+  }
   // >>>>>> Draw a faint black rectangle over what is currently on the stage so it fades over time.
   fill(0, 20); // change the latter number to make the fade deeper (from 1 to 20 is good)
   rect(0, 0, width, height);
@@ -224,11 +235,7 @@ void draw() {
   int i = (frameCount % words.size());
   String word = words.get(i);
   println ("word = "+word+" #"+i);
-  /*if (i==1)
-   {
-   grabTweets();
-   }
-   */
+  
   // <<<<<<<
 
   // >>>>>>> HASHTAGS
@@ -338,6 +345,11 @@ void sendTweet (String tweetText) {
 
 // >>>>>>>>>>>>>>>>>>>>>>>>> GRAB THOSE TWEETS  >>>>>>>>>>>>>
 void grabTweets() {
+  fill(0, 25, 89, 255);
+  textSize(60); 
+  text("Reading the collective mind...", width/8, height/2); // 
+  
+   // reGrabTweets=false; // reset the flag
   //Credentials
   ConfigurationBuilder cb = new ConfigurationBuilder();
   cb.setOAuthConsumerKey("twitOAuthConsumerKey");
@@ -432,7 +444,8 @@ void grabTweets() {
     {
       uberWords  = append (uberWords,words.get(p).toString());
     }
-    saveStrings ("words.txt",uberWords);
+    
+    saveStrings ("words-"+stamp+".txt",uberWords);
   } // <<<<<< end try 
   catch (TwitterException te) {
     println("Couldn't connect: " + te);
