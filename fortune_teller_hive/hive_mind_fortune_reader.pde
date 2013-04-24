@@ -59,11 +59,10 @@ ArrayList<String> usernames = new ArrayList();
 ArrayList<String> urls = new ArrayList();
 String uberWords [] = new String[0]; //massive array to build up history of words harvested
 // <<<<<<
-
-// >>>>> adminSetting
 String adminSettings [] = {
-  "#hivemind", "@rosemarybeetle", "weird", "100", "60000"
+  "#hivemind", "@rosemarybeetle", "weird", "100", "50000"
 }; 
+
 String tweetTextIntro="";
 String readingSettingText="";
 // <<<<<< fill with defaults in case remote settings don't load 
@@ -104,9 +103,15 @@ float delayCheck; //delayCheck; // THIS IS IMPORTANT. it i what stops overpollin
 
 
 void setup() {
+  println (" adminSettings 1 " + adminSettings);
+  for (int i = 0 ; i < adminSettings.length; i++) {
+      println("adminSettings["+i+"]= "+adminSettings[i]);
+    }
   updateReadingSettings();
   tts = new TTS();
   loadRemoteAdminSettings(); // loads Twitter serch parameters from remote Google spreadsheet
+  println ("adminSettings 2 "+adminSettings);
+  
   loadRemoteStopWords();// load list of stop words into an array, loaded from a remote spreadsheet
   //Set the size of the stage, 
   //size(550, 550); // TEST SETTING
@@ -220,11 +225,13 @@ void setup() {
 void draw() {
  timeNow=millis();
  println ("timeNow-grabTime = "+(timeNow-grabTime));
- 
+  try {
+  println ();
   if ((timeNow-grabTime)>float(adminSettings[4])) {
    grabTweets();
    grabTime=millis(); // reset grabTime
   }
+ 
   // >>>>>> Draw a faint black rectangle over what is currently on the stage so it fades over time.
   fill(0, 20); // change the latter number to make the fade deeper (from 1 to 20 is good)
   rect(0, 0, width, height);
@@ -294,6 +301,12 @@ void draw() {
   tfUserCurrent=tf.getText() ; //check the text box content every loop
   tfTextCurrent=tfRand.getText(); 
   buttonCheck(tfTextCurrent); // on screen check button every loop 
+  
+  }
+  catch (Exception e){}
+  finally 
+  {println ("inside DRAW()");
+  }
   checkSerial() ; // check serial port every loop
 }
 // >>>>>>>>>>>>>>>>>>>>>>>> SEND THAT TWEET >>>>>>>>>>>>>>>
@@ -359,11 +372,12 @@ void grabTweets() {
 
   //Make the twitter object and prepare the query
   Twitter twitter = new TwitterFactory(cb.build()).getInstance();
+  try { /// TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
   Query query = new Query(adminSettings[0]); // this is assuming you check the first of 4 admin settings, but should be extended to include passing a selctor param
 
   query.setRpp(int(adminSettings[3])); // rrp is the number of tweets returned per page
   // The factory instance is re-useable and thread safe.
-
+  
   //Try making the query request.
   try {
     QueryResult result = twitter.search(query); // gets the query
@@ -450,7 +464,10 @@ void grabTweets() {
   catch (TwitterException te) {
     println("Couldn't connect: " + te);
   }; // <<<<<< end catch
-  
+  }
+  catch (Exception e)
+  {println("no adminsettings from internet");
+  }
 } // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end grabTweets() <<<<<<<<
 
 // >>>>>>>>>>>>>>>>>>>
@@ -488,6 +505,7 @@ void checkSerial() {
 // >>>>>>>>>>>>>>>>>>> load remote  admin settings   >>>>>>>>>>>>>>
 void loadRemoteAdminSettings ()
 {
+  try {
   adminSettings = loadStrings("https://docs.google.com/spreadsheet/pub?key=0AgTXh43j7oFVdFNOcGtMaXZnS3IwdTJacllUT1hLQUE&output=txt");
   if (loadSettingsCheckInt==true)
   {  
@@ -497,11 +515,16 @@ void loadRemoteAdminSettings ()
     loadSettingsCheckInt =false;
   }
   updateReadingSettings();
+  }
+  catch (Exception e){
+    println ("no CONNECTION");
+  }
 }
 
 // >>>>
 void loadRemoteStopWords ()
 {
+  try {
   String stopWordsLoader [] = loadStrings("https://docs.google.com/spreadsheet/pub?key=0AgTXh43j7oFVdFByYk41am9jRnRkeU9LWnhjZFJTOEE&output=txt");
 
   if (loadstopWordsCheckInt==true)
@@ -512,6 +535,10 @@ void loadRemoteStopWords ()
       println("stopWords["+i+"]= "+stopWords.get(i)+". Length now: "+stopWords.size());
     }
     loadstopWordsCheckInt=false;
+  }
+  }
+  catch (Exception e)
+  {println("jjjjjjjjjjjjj");
   }
 }
 void keyReleased() {
