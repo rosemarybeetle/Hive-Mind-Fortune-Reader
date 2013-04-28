@@ -58,9 +58,10 @@ ArrayList<String> hashtags = new ArrayList();
 ArrayList<String> usernames = new ArrayList();
 ArrayList<String> urls = new ArrayList();
 String uberWords [] = new String[0]; //massive array to build up history of words harvested
+String queryString = "";
 // <<<<<<
 String adminSettings [] = {
-  "#hivemind", "@rosemarybeetle", "weird", "100", "50000"
+  "#hivemind", "@rosemarybeetle", "weird", "100", "50000","h"
 }; 
 
 String tweetTextIntro="";
@@ -380,8 +381,22 @@ void grabTweets() {
   //Make the twitter object and prepare the query
   Twitter twitter = new TwitterFactory(cb.build()).getInstance();
   try { /// TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
-    Query query = new Query(adminSettings[0]); // this is assuming you check the first of 4 admin settings, but should be extended to include passing a selctor param
-
+   // these IF statements are testing to see the search mode [h,u,s]
+   if (adminSettings[5].equals("h")) {
+     println ("use hashtag for search");
+    queryString = adminSettings[0];
+     } 
+      if (adminSettings[5].equals("u"))
+     {
+       println ("use search phrase for search");
+    queryString = adminSettings[1];
+     }
+     if (adminSettings[5].equals("s"))
+     {
+       println ("use username for search");
+    queryString = adminSettings[2];
+     }
+    Query query = new Query(queryString); // this is default you check the first of 4 admin settings, but should be extended to include passing a selctor param
     query.setRpp(int(adminSettings[3])); // rrp is the number of tweets returned per page
     // The factory instance is re-useable and thread safe.
 
@@ -418,14 +433,14 @@ void grabTweets() {
 
       // >>>>>> make the list of hashtags
       String hashtag= cleanTweets.get(j);
-      //println ("hashtag= "+hashtag);
+      println ("hashtag= "+hashtag);
       String hashtagArray[] = hashtag.split("#");
       if (hashtagArray.length>1)
       {
         //println ("inside checker");
         hashtags.add(hashtagArray[1]);
         words.remove(hashtagArray[1]);
-        //println ("hashtagArray["+j+"]= "+hashtagArray[1]);
+        println ("hashtagArray["+j+"]= "+hashtagArray[1]);
       }
       // <<<<<<<
 
