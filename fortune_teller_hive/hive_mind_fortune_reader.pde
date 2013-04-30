@@ -1,3 +1,4 @@
+
 // -----------------------
 // ----
 // Hive-Mind Fortune-Reader
@@ -30,7 +31,7 @@
 // >>>>>>
 boolean serialCheckInt=true;
 boolean grabtweetCheckInt=true;
-boolean loadSettingsCheckInt=true;
+boolean loadSettingsFirstLoadFlag=true;
 boolean loadstopWordsCheckInt=true;
 // <<<<<< end load flags
 
@@ -57,15 +58,26 @@ ArrayList<String> words = new ArrayList();
 ArrayList<String> hashtags = new ArrayList();
 ArrayList<String> usernames = new ArrayList();
 ArrayList<String> urls = new ArrayList();
+ArrayList tweetster = new ArrayList();
 String uberWords [] = new String[0]; //massive array to build up history of words harvested
-String queryString = "";
+String queryString = ""; // 
+String queryType = ""; //
 // <<<<<<
 String adminSettings [] = {
-  "#hivemind", "@rosemarybeetle", "weird", "100", "50000","h"
+  "#hivemind", "@rosemarybeetle", "weird", "100", "50000", "h"
 }; 
 
 String tweetTextIntro="";
 String readingSettingText="";
+int panelHeight = 150; 
+int border = 10;
+int boxY = 515;
+int boxWidth = 250;
+int boxHeight = 25;
+int columnPos2_X = 310;
+
+
+// admin panel height
 // <<<<<< fill with defaults in case remote settings don't load 
 
 // >>>>>>  grabTweets Timer settings  >>>>>>>>>>>
@@ -104,12 +116,12 @@ float delayCheck; //delayCheck; // THIS IS IMPORTANT. it i what stops overpollin
 
 
 void setup() {
+  tts = new TTS();
   println (" adminSettings 1 " + adminSettings);
   for (int i = 0 ; i < adminSettings.length; i++) {
     println("adminSettings["+i+"]= "+adminSettings[i]);
   }
-  updateReadingSettings();
-  tts = new TTS();
+  updateDisplayVariables();
   loadRemoteAdminSettings(); // loads Twitter search parameters from remote Google spreadsheet
   println ("adminSettings 2 "+adminSettings);
 
@@ -118,7 +130,7 @@ void setup() {
   //size(550, 550); // TEST SETTING
 
   // >>>>>>> screen size and settings....
-  size(screen.width-10, screen.height-10);// USE THIS SETTING FOR EXPORTED APPLICATION IN FULLSCVREEN (PRESENT) MODE
+  size(screen.width-border, screen.height-border);// USE THIS SETTING FOR EXPORTED APPLICATION IN FULLSCVREEN (PRESENT) MODE
   background(0); // SET BACKGROUND TO BLACK
   // <<<<<<<
 
@@ -142,97 +154,27 @@ void setup() {
     println ("-------------------------");
   }
   // <<<<<<<
+  buildAdminPanel();
 
-  // >>>>>>> set up fonts
-  //PFont font = createFont("arial",20);
-  font = new ControlFont(createFont("arial", 100), 15);
-  // <<<<<<<
-
-  // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  set up GUI elements >>>>>>>>>>>>>>>>>>>>
-  noStroke();
-  cp5 = new ControlP5(this); // adds in a control instance to add buttons and text field to
-  noStroke();
-  tf = cp5.addTextfield("Enter your twitter username");
-  tf.setPosition(10, 475);
-  // tf.setStringValue("@");
-  tf.setSize(250, 25);
-  tf.setColorBackground(focusBackgroundColor);
-  tf.setColor(focusColor);
-  tf.setFont(font);
-  tf.setFocus(true);
-  //tf.setAutoClear(true);
-  tf.setText ("@");
-  tf.captionLabel().setControlFont(font);
-  // @@@ 
-  tfRand = cp5.addTextfield("Enter random msg text"); // where you add in tweet text strings
-  tfRand.setPosition(10, 415);
-  // tf.setStringValue("@");
-  tfRand.setSize(250, 25);
-  tfRand.setColorBackground(focusOffBackgroundColor);
-  tfRand.setColor(focusOffColor);
-
-  tfRand.setFont(font);
-  tfRand.setFocus(false);
-  //tf.setAutoClear(true);
-  tfRand.setText ("");
-  tfRand.captionLabel().setControlFont(font);
-
-  // @@@
-
-  tfAlert = cp5.addTextlabel("please wait");
-  tfAlert.setPosition(10, 400);
-  tfAlert.setSize(250, 25);
-  tfAlert.setFont(font);
-
-  //tf.setAutoClear(true);
-  tfAlert.setColor(color(255, 255, 255));
-  tfAlert.getCaptionLabel().align(ControlP5.CENTER, ControlP5.CENTER);
-
-  tfAlert.setText ("Psychic reading for "+readingSettingText);
-
-  //tfAlert.setVisible(false) 
-  tfAlert.captionLabel().setControlFont(font);
-
-  // create a new button with name 'Tell my Fortune'
-  b = cp5.addButton("Press to tell your fortune", 20, 100, 50, 80, 20);
-  b.setId(2);  // id to target this element
-  b.setWidth(250); // width
-  b.setHeight(25);
-  b.setPosition(290, 475);
-
-  b.captionLabel().setControlFont(font);
-  b.captionLabel().style().marginLeft = 1;
-  b.captionLabel().style().marginTop = 1;
-  b.setVisible(true);
-  b.isOn();
-  b.setColorBackground(focusOffBackgroundColor);
-
-
-
-
-  // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end of GUI <<<<<<<<<<
-
-
-  // >>>>>>>>
   smooth();
   // Now call tweeting action functions...
   grabTweets();
+
   println ("finished grabbing tweets");
   println ();
   println ();
-   loadRemoteStopWords();// load list of stop words into an array, loaded from a remote spreadsheet
-
 }  // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end of setup()  <<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
 void draw() {
- 
+  int panelTop= height-panelHeight;
   timeNow=millis();
-  println ("timenow = "+timeNow);
+  /*println (" "+timeNow);
   println ();
   println ("grabTime = "+grabTime);
   println ();
   println ("timeNow-grabTime = "+(timeNow-grabTime));
+  */
   try {
     println ();
     if ((timeNow-grabTime)>float(adminSettings[4])) {
@@ -241,12 +183,13 @@ void draw() {
 
     // >>>>>> Draw a faint black rectangle over what is currently on the stage so it fades over time.
     fill(0, 20); // change the latter number to make the fade deeper (from 1 to 20 is good)
-    rect(0, 0, width, height);
+    rect(0, 0, width, height-panelHeight);
     // <<<<<<
 
     // >>>>>>> WORDS
     // Draw a word from the list of words that we've built (using FRAMECOUNT - THIS INCREMENTS BY +1 EVERY REDRAW - %=MODULO)
-    int i = (frameCount % words.size());
+    //int i = (frameCount % words.size());
+    int i = (int (random (words.size())));
     String word = words.get(i);
     println ("word = "+word+" #"+i);
 
@@ -254,19 +197,19 @@ void draw() {
 
     // >>>>>>> HASHTAGS
     //Draw a hashtag from the list of words that we've built
-    int j = (frameCount % hashtags.size());
-    String hashtag = hashtags.get(j);
+    int j = (int (random (hashtags.size())));
+      String hashtag = hashtags.get(j);
     // <<<<<<<
 
     // >>>>>> USERNAMES
     //Draw a username from the list of words that we've built
-    int k = (frameCount % usernames.size());
-    String username = usernames.get(k);
+    int k = (int (random (usernames.size())));
+     String username = usernames.get(k);
     // <<<<<<
 
     // >>>>>> URLS
     //Draw a url from the list of words that we've built
-    int l = (frameCount % urls.size());
+   int l = (int (random (urls.size())));
     String url = urls.get(l);
     // <<<<<<
 
@@ -277,34 +220,32 @@ void draw() {
     // >>>>> Put url somewhere random on the stage, with a random size and colour
     fill(0, 25, 89, 255);
     textSize(random(15, 20)); 
-    text(url, random(width), random(height)); // 
+    text(url, random(width), random(panelTop)); // 
     // <<< SEND URL TO THE SCREEN
 
     // >>> SEND HASHTAG TO THE SCREEN WITH DIFFERENT SIZE ETC 
     fill(255, 0, 0, 255);
     textSize(random(15, 25));
-    text("#"+hashtag, random(width), random (height));
+    text("#"+hashtag, random(width), random (panelTop));
     // <<< END SEND HASHTAG#
 
     // >>>SEND WORD TO SCREEN ALSO WITH DIFFERENT SETTINGS
     textSize(random(15, 35));
     fill(255, 255);
-    text(word, random(width), random (height));
+    text(word, random(width), random (panelTop));
     // <<< END SEND WORD
 
     // >>> SEND USERNAME TO SCREEN
     fill(0, 255, 22, 255);
     textSize(random(15, 25));
-    text("@"+username, random(width), random (height));
+    text("@"+username, random(width), random (panelTop));
     // <<< END SEND USERNAME
 
 
     // --------------
     // --------------
-    // following is for text boxes
-    color c1 = color(70, 130, 180);
-    fill (c1);
-    rect(0, 400, 550, 150);
+    // following is for text boxes background. 
+
     tfUserCurrent=tf.getText() ; //check the text box content every loop
     tfTextCurrent=tfRand.getText(); 
     buttonCheck(tfTextCurrent); // on screen check button every loop
@@ -319,7 +260,7 @@ void draw() {
 }
 // >>>>>>>>>>>>>>>>>>>>>>>> SEND THAT TWEET >>>>>>>>>>>>>>>
 void sendTweet (String tweetText) {
-  updateReadingSettings();
+  updateDisplayVariables();
   //@@@
   timerT=millis();  // reset the timer each time
 
@@ -332,7 +273,7 @@ void sendTweet (String tweetText) {
 
     println("tweet being sent");
     println("tfUserCurrent = "+ tfUserCurrent);
-    tweetTextIntro = "Psychic reading for "+readingSettingText;
+    tweetTextIntro = readingSettingText;
 
     String fortune = tfUserCurrent + " from "+tweetText+ ", " +tfTextCurrent+". "+tweetTextOutro;
     String fortuneSpoken = (fortuneGreeting + tfUserCurrent+ "How. do. you. feel about. "+fortune);
@@ -366,10 +307,11 @@ void sendTweet (String tweetText) {
 
 // >>>>>>>>>>>>>>>>>>>>>>>>> GRAB THOSE TWEETS  >>>>>>>>>>>>>
 void grabTweets() {
+
   fill(0, 25, 89, 255);
   textSize(60); 
   text("Reading the collective mind...", width/8, height/2); // 
-
+  loadRemoteAdminSettings();
   // reGrabTweets=false; // reset the flag
   //Credentials
   ConfigurationBuilder cb = new ConfigurationBuilder();
@@ -381,21 +323,8 @@ void grabTweets() {
   //Make the twitter object and prepare the query
   Twitter twitter = new TwitterFactory(cb.build()).getInstance();
   try { /// TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
-   // these IF statements are testing to see the search mode [h,u,s]
-   if (adminSettings[5].equals("h")) {
-     println ("use hashtag for search");
-    queryString = adminSettings[0];
-     } 
-      if (adminSettings[5].equals("u"))
-     {
-       println ("use search phrase for search");
-    queryString = adminSettings[1];
-     }
-     if (adminSettings[5].equals("s"))
-     {
-       println ("use username for search");
-    queryString = adminSettings[2];
-     }
+    // these IF statements are testing to see the search mode [h,u,s]
+
     Query query = new Query(queryString); // this is default you check the first of 4 admin settings, but should be extended to include passing a selctor param
     query.setRpp(int(adminSettings[3])); // rrp is the number of tweets returned per page
     // The factory instance is re-useable and thread safe.
@@ -403,12 +332,13 @@ void grabTweets() {
     //Try making the query request.
 
     QueryResult result = twitter.search(query); // gets the query
-    ArrayList tweets = (ArrayList) result.getTweets(); // creates an array to store tweets in
+
+      tweetster = (ArrayList) result.getTweets(); // creates an array to store tweets in
     // then fills it up!
 
-    println ("number of tweets = "+tweets.size());
-    for (int i = 0; i < tweets.size(); i++) {
-      Tweet t = (Tweet) tweets.get(i);
+    println ("number of  = "+tweetster.size()+" in tweets Arraylist()");
+    for (int i = 0; i < tweetster.size(); i++) {
+      Tweet t = (Tweet) tweetster.get(i); 
       String user = t.getFromUser();
       String msg = t.getText();
       Date d = t.getCreatedAt();
@@ -418,63 +348,88 @@ void grabTweets() {
       String[] input = msg.split(" ");
       for (int j = 0;  j < input.length; j++) {
         cleanTweets.add(input[j]);
+
         for (int ii = 0 ; ii < stopWords.size(); ii++) {
 
           if (stopWords.get(ii).equals(input[j])) {
             cleanTweets.remove(input[j]);
             println("Word removed due to matched stopword: "+input[j]);
-          }
-        }
-      }
-      println ("cleanTweets = "+cleanTweets);
-    }
-    for (int j = 0;  j < cleanTweets.size(); j++) {
-      words.add(cleanTweets.get(j));
+          } // end if
+        } //end for (ii++) //stopword c
+      }// end clean this msg
+}// end of all tweet cleaning
+println ("cleanTweets = "+cleanTweets);
 
-      // >>>>>> make the list of hashtags
-      String hashtag= cleanTweets.get(j);
-      println ("hashtag= "+hashtag);
-      String hashtagArray[] = hashtag.split("#");
-      if (hashtagArray.length>1)
-      {
-        //println ("inside checker");
-        hashtags.add(hashtagArray[1]);
-        words.remove(hashtagArray[1]);
-        println ("hashtagArray["+j+"]= "+hashtagArray[1]);
-      }
-      // <<<<<<<
-
-      // >>>>>>> set up list of usernames
-      String username= cleanTweets.get(j);
-      String usernameArray[] = username.split("@");
-      // println ("usernameArray = ");
-      //println (usernameArray);
-      if (usernameArray.length>1)
-      {
-        usernames.add(usernameArray[1]);
-        words.remove(usernameArray[1]);
-        // println ("usernameArray["+j+"]= "+usernameArray[1]);
-      }
-      // <<<<<<<<
-
-      // >>>>>>>> set up urls >>>>>>
-      String url = cleanTweets.get(j);
-      String urlArray[] = url.split("h");
-      if (urlArray.length>1)
-      {
-        String urlArray2[] = urlArray[1].split("t");
-        if (urlArray2.length>2)
+      for (int k = 0;  k < cleanTweets.size(); k++) {
+        words.add(cleanTweets.get(k));
+        if (words.size() >580) 
         {
-          urls.add(url);
-          words.remove(url);
+          words.remove(0);
         }
-        // <<<<<<<<<< end
+        /*if (loadSettingsFirstLoadFlag==false)
+         {
+         if (words.size() >1) {words.remove(0);
+         }
+         }
+         */
 
-        // >>>>>>>>>>
-      }
-    };
-    println ("LLLLLLLLLLLLLL");
+        // >>>>>> make the list of hashtags
+        String hashtag= cleanTweets.get(k);
+
+        String hashtagArray[] = hashtag.split("#");
+        if (hashtagArray.length>1)
+        {
+          //println ("inside checker");
+          hashtags.add(hashtagArray[1]);
+          int v=words.size()-1;
+          words.remove(v);
+          if (queryType.equals("hashtag"))
+          {
+            if (hashtagArray[1].equals("#"+queryString)) {
+              hashtags.remove(hashtagArray[1]);
+            }
+          }
+          println ("hashtagArray["+k+"]= "+hashtagArray[1]);
+        }
+        // <<<<<<<
+
+        // >>>>>>> set up list of usernames
+        String username= cleanTweets.get(k);
+        String usernameArray[] = username.split("@");
+        // println ("usernameArray = ");
+        //println (usernameArray);
+        if (usernameArray.length>1)
+        {
+          usernames.add(usernameArray[1]);
+          int vv=words.size()-1; // takes out the username by removing last entry in words() 
+          words.remove(vv);//
+          // println ("usernameArray["+j+"]= "+usernameArray[1]);
+        }
+        // <<<<<<<<
+
+        // >>>>>>>> set up urls >>>>>>
+        String url = cleanTweets.get(k);
+        String urlArray[] = url.split("h");
+        if (urlArray.length>1)
+        {
+          String urlArray2[] = urlArray[1].split("t");
+          if (urlArray2.length>2)
+          {
+            urls.add(url);
+            int vvv=words.size()-1;
+            words.remove(vvv);
+          }
+          // <<<<<<<<<< end
+
+          // >>>>>>>>>>
+        }
+      };
+    
+
+    
+    println ("WORDS.SIZE () = "+words.size());
     println ("words = "+words);
+    println ("@@@@@@@@@@@@@@@@@@@@@@@");
 
     for (int p =0;p<words.size(); p++)
     {
@@ -490,6 +445,13 @@ void grabTweets() {
     println("no adminsettings from internet");
   }
   grabTime=millis(); // reset grabTime
+  if (loadSettingsFirstLoadFlag==true)
+  { 
+    loadSettingsFirstLoadFlag =false; //
+    //this is the line that will cause subsequqnt updates to remove the first word(0)
+  } 
+  cleanTweets.clear();
+  tweetster.clear();
 } // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end grabTweets() <<<<<<<<
 
 // >>>>>>>>>>>>>>>>>>>
@@ -507,7 +469,7 @@ void buttonCheck(String tweetTextIntro)
 // >>>>>>>>>>>>>>> check the open serial port >>>>>>>>>>
 void checkSerial() {
   println ();
-  println ("inside checkSerial()");
+  //println ("inside checkSerial()");
   try {
     // >>>>>> see if the port is sending you stuff
     while (port.available () > 0) {
@@ -531,14 +493,30 @@ void loadRemoteAdminSettings ()
 {
   try {
     adminSettings = loadStrings("https://docs.google.com/spreadsheet/pub?key=0AgTXh43j7oFVdFNOcGtMaXZnS3IwdTJacllUT1hLQUE&output=txt");
-    if (loadSettingsCheckInt==true)
-    {  
-      for (int i = 0 ; i < adminSettings.length; i++) {
-        println("adminSettings["+i+"]= "+adminSettings[i]);
-      } // end for
-      loadSettingsCheckInt =false;
-    } // end if
-    updateReadingSettings();
+
+    for (int i = 0 ; i < adminSettings.length; i++) {
+      println("adminSettings["+i+"]= "+adminSettings[i]);
+    } // end for
+    if (adminSettings[5].equals("h")) {
+      println ("use hashtag for search");
+      queryString = adminSettings[0];
+      queryType = "hashtag";
+    } 
+    if (adminSettings[5].equals("u"))
+    {
+      println ("use username phrase for search");
+      queryString = adminSettings[1];
+      queryType = "username";
+    }
+    if (adminSettings[5].equals("s"))
+    {
+      println ("use search term for search");
+      queryString = adminSettings[2];
+      queryType = "search term";
+    }
+    updateDisplayVariables();
+
+    // end if
   }
   catch (Exception e) {
     println ("no CONNECTION");
@@ -599,7 +577,8 @@ void tfToggleFocus (int val)
     valFocus=0;
   }
 }
-void updateReadingSettings() {
+void updateDisplayVariables() {
+  // Reading the mind queryString
   String currentHashtag = adminSettings [0];
   String displayHashtag = "hashtag = "+adminSettings [0]+"   ";
   if (adminSettings[0]=="")
@@ -618,5 +597,85 @@ void updateReadingSettings() {
   {
     displayUserName="";
   }
-  readingSettingText = displayHashtag+displayUserName+displaySearchTerms;
+  readingSettingText = "Currently reading the hive mind for "+queryType+"= "+ queryString;
+  //displayHashtag+displayUserName+displaySearchTerms;
+}
+
+void buildAdminPanel() {
+  int  panelTop = height-panelHeight;
+  color c1 = color(70, 130, 180);
+  fill (c1);
+  rect(0, panelTop, width, panelHeight);
+  // >>>>>>> set up fonts
+  //PFont font = createFont("arial",20);
+  font = new ControlFont(createFont("arial", 100), 15);
+  // <<<<<<<
+
+  // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  set up GUI elements >>>>>>>>>>>>>>>>>>>>
+  noStroke();
+  cp5 = new ControlP5(this); // adds in a control instance to add buttons and text field to
+  noStroke();
+  tf = cp5.addTextfield("Enter your twitter username");
+  tf.setPosition(border, boxY-60);
+  // tf.setStringValue("@");
+  tf.setSize(boxWidth, boxHeight);
+  tf.setColorBackground(focusBackgroundColor);
+  tf.setColor(focusColor);
+  tf.setFont(font);
+  tf.setFocus(true);
+  //tf.setAutoClear(true);
+  tf.setText ("@");
+  tf.captionLabel().setControlFont(font);
+  // @@@ 
+
+
+  tfAlert = cp5.addTextlabel("please wait");
+  tfAlert.setPosition(columnPos2_X, boxY-60 );
+  tfAlert.setSize(boxWidth, boxHeight);
+  tfAlert.setFont(font);
+
+  //tf.setAutoClear(true);
+  tfAlert.setColor(color(255, 255, 255));
+  tfAlert.getCaptionLabel().align(ControlP5.CENTER, ControlP5.CENTER);
+
+  tfAlert.setText (readingSettingText);
+
+  //tfAlert.setVisible(false) 
+  tfAlert.captionLabel().setControlFont(font);
+
+  // create a new button with name 'Tell my Fortune'
+  b = cp5.addButton("Press to tell your fortune", 20, 100, 50, 80, 20);
+  b.setId(2);  // id to target this element
+  b.setWidth(250); // width
+  b.setHeight(25);
+  b.setPosition(border, boxY);
+
+  b.captionLabel().setControlFont(font);
+  b.captionLabel().style().marginLeft = 1;
+  b.captionLabel().style().marginTop = 1;
+  b.setVisible(true);
+  b.isOn();
+  b.setColorBackground(focusOffBackgroundColor);
+
+  tfRand = cp5.addTextfield("Enter random msg text"); // where you add in tweet text strings
+  tfRand.setPosition(columnPos2_X, boxY);
+  // tf.setStringValue("@");
+  tfRand.setSize(250, 25);
+  tfRand.setColorBackground(focusOffBackgroundColor);
+  tfRand.setColor(focusOffColor);
+
+  tfRand.setFont(font);
+  tfRand.setFocus(false);
+  //tf.setAutoClear(true);
+  tfRand.setText ("");
+  tfRand.captionLabel().setControlFont(font);
+
+  // @@@
+
+
+
+  // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end of GUI <<<<<<<<<<
+
+
+  // >>>>>>>>
 }
