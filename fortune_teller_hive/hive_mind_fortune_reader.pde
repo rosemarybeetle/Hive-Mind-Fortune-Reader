@@ -41,6 +41,7 @@ String tweetSendTrigger ="fireTweet";
 String fortuneGreeting = "Hello. I have stared deep. into the hive mind. Your fortune reading is."; 
 String fortune = "";
 String fortuneSpoken = "";
+int widthRandomiser = 120;
 // <<<<<<
 
 // >>>>>>
@@ -72,12 +73,12 @@ String adminSettings [] = {
 
 String tweetTextIntro="";
 String readingSettingText="";
-int panelHeight = 100; 
-int border = 30;
+int panelHeight = 60; 
+int border = 40;
 int boxY = 515;
-int boxWidth = 250;
+int boxWidth = 270;
 int boxHeight = 40;
-int columnPos2_X = 280;
+int columnPos2_X = 310;
 
 
 // admin panel height
@@ -190,7 +191,7 @@ void draw() {
     }
 
     // >>>>>> Draw a faint black rectangle over what is currently on the stage so it fades over time.
-    fill(0, 40); // change the latter number to make the fade deeper (from 1 to 20 is good)
+    fill(0, 30); // change the latter number to make the fade deeper (from 1 to 20 is good)
     rect(0, 0, width, height-panelHeight);
     // <<<<<<
 
@@ -226,27 +227,27 @@ void draw() {
 
     //-------------
     // >>>>> Put url somewhere random on the stage, with a random size and colour
-    fill(255, 122, 9, 255);
-    textSize(random(20, 25)); 
-    text(url, random(width), random(panelTop)); // 
+    fill(255, 255, 0, 255);
+    textSize(random(30, 40)); 
+    text(url, random(width)-widthRandomiser, random(panelTop)); // 
     // <<< SEND URL TO THE SCREEN
 
     // >>> SENDs HASHTAG TO THE SCREEN WITH DIFFERENT SIZE 
     fill(255, 0, 0, 255);
-    textSize(random(25, 40));
-    text("#"+hashtag, random(width), random (panelTop));
+    textSize(random(40,45));
+    text("#"+hashtag, random(width)-widthRandomiser, random (panelTop));
     // <<< END SEND HASHTAG#
 
     // >>>SEND WORD TO SCREEN ALSO WITH DIFFERENT SETTINGS
-    textSize(random(35, 45));
+    textSize(random(45, 60));
     fill(255, 255);
-    text(word, random(width), random (panelTop));
+    text(word, random(width)-widthRandomiser, random (panelTop));
     // <<< END SEND WORD
 
     // >>> SEND USERNAME TO SCREEN
     fill(0, 255, 22, 255);
-    textSize(random(30, 36));
-    text("@"+username, random(width), random (panelTop));
+    textSize(random(35, 45));
+    text("@"+username, random(width)-widthRandomiser, random (panelTop));
     // <<< END SEND USERNAME
 
 
@@ -255,6 +256,7 @@ void draw() {
     // following is for text boxes background. 
 
     tfUserCurrent=tf.getText() ; //check the text box content every loop
+    println ("tfUserCurrent= "+tfUserCurrent);
     buttonCheck(tfTextCurrent); // on screen check button every loop
   }
   catch (Exception e) {
@@ -626,27 +628,27 @@ void sendTweet (String tweetText) {
     {
       displayUserName="";
     }
-    readingSettingText = "Currently reading the hive mind for "+queryType+"= "+ queryString;
+    readingSettingText = "Reading the hive mind for "+queryType+"= "+ queryString;
     color cl = color(70, 30, 180);// not in use
     color cl2 = color(70, 230, 180);//not in use
     fill (clPanel);
-    rect(30, boxY+15, width, 105);
+    //rect(30, boxY+15, width, 105);
     fill(0, 0, 0, 255);
-    textSize(20);
-    text(readingSettingText, 10, boxY+40);
-    rect(0, boxY+13, width, 1);
-    textSize(27);
-    text("@", 5, boxY-10);
+    textSize(40);
+    //text(readingSettingText, 10, boxY+40);
+    //rect(0, boxY+13, width, 1);
+    textSize(40);
+    text("@", 2, boxY+33);
 
 
     fill (clPanel);
-    rect(columnPos2_X, boxY-42, width, 50);
+    rect(columnPos2_X, boxY-10, width, 50);
     fill(0, 0, 0, 255);
-    textSize(20);
-    text(adminSettings[7], columnPos2_X+30, boxY-25);
+    textSize(35);
+    //text(adminSettings[7], columnPos2_X+30, boxY-25);
 
 
-    text(" < enter your Twitter @username in the yellow box. Then press the button", columnPos2_X, boxY);
+    text("<enter @username + press my button!", columnPos2_X, boxY+30);
 
 
     //displayHashtag+displayUserName+displaySearchTerms;
@@ -659,7 +661,7 @@ void sendTweet (String tweetText) {
     rect(0, panelTop, width, panelHeight);
     // >>>>>>> set up fonts
     //PFont font = createFont("arial",20);
-    font = new ControlFont(createFont("arial", 100), 15);
+    font = new ControlFont(createFont("arial", 100), 40);
     // <<<<<<<
 
     // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  set up GUI elements >>>>>>>>>>>>>>>>>>>>
@@ -667,7 +669,7 @@ void sendTweet (String tweetText) {
     cp5 = new ControlP5(this); // adds in a control instance to add buttons and text field to
     noStroke();
     tf = cp5.addTextfield("");
-    tf.setPosition(border, boxY-40);
+    tf.setPosition(border, boxY);
     tf.setSize(boxWidth, boxHeight);
     tf.setColorBackground(focusBackgroundColor);
     tf.setColor(focusColor);
