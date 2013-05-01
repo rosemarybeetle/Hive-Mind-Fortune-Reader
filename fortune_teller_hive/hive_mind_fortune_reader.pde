@@ -64,7 +64,7 @@ String queryString = ""; //
 String queryType = ""; //
 // <<<<<<
 String adminSettings [] = {
-  "#hivemind", "@rosemarybeetle", "weird", "100", "50000", "h"
+  "#hivemind", "@rosemarybeetle", "weird", "100", "50000", "h", "500"
 }; 
 
 String tweetTextIntro="";
@@ -92,7 +92,6 @@ ControlFont font;
 controlP5.Button b;
 controlP5.Textfield tf;
 controlP5.Textfield tfRand;
-controlP5.Textlabel tfAlert;
 controlP5.Textlabel lb;
 // <<<<<<<
 
@@ -182,7 +181,7 @@ void draw() {
     }
 
     // >>>>>> Draw a faint black rectangle over what is currently on the stage so it fades over time.
-    fill(0, 20); // change the latter number to make the fade deeper (from 1 to 20 is good)
+    fill(0, 30); // change the latter number to make the fade deeper (from 1 to 20 is good)
     rect(0, 0, width, height-panelHeight);
     // <<<<<<
 
@@ -239,7 +238,7 @@ void draw() {
     fill(0, 255, 22, 255);
     textSize(random(15, 25));
     text("@"+username, random(width), random (panelTop));
-    // <<< END SEND USERNAME
+        // <<< END SEND USERNAME
 
 
     // --------------
@@ -257,6 +256,8 @@ void draw() {
     println ("inside DRAW()");
   }
   checkSerial() ; // check serial port every loop
+    
+    
 }
 // >>>>>>>>>>>>>>>>>>>>>>>> SEND THAT TWEET >>>>>>>>>>>>>>>
 void sendTweet (String tweetText) {
@@ -308,9 +309,14 @@ void sendTweet (String tweetText) {
 // >>>>>>>>>>>>>>>>>>>>>>>>> GRAB THOSE TWEETS  >>>>>>>>>>>>>
 void grabTweets() {
 
+
+ color c13 = color(255, 0, 0);
+  fill (c13);
+  rect(0, (height/2)-120, width, 90);
+   
   fill(0, 25, 89, 255);
-  textSize(60); 
-  text("Reading the collective mind...", width/8, height/2); // 
+  textSize(70); 
+  text("Reading the collective mind...", (width/8)-120, (height/2)-50); // 
   loadRemoteAdminSettings();
   // reGrabTweets=false; // reset the flag
   //Credentials
@@ -362,10 +368,10 @@ println ("cleanTweets = "+cleanTweets);
 
       for (int k = 0;  k < cleanTweets.size(); k++) {
         words.add(cleanTweets.get(k));
-        if (words.size() >580) 
+        if (words.size() >int(adminSettings[6])) 
         {
           words.remove(0);
-        }
+        } // keeps aray to a finite length by dropping off first element as new one is added 
         /*if (loadSettingsFirstLoadFlag==false)
          {
          if (words.size() >1) {words.remove(0);
@@ -387,7 +393,11 @@ println ("cleanTweets = "+cleanTweets);
           {
             if (hashtagArray[1].equals("#"+queryString)) {
               hashtags.remove(hashtagArray[1]);
-            }
+            } else if (hashtags.size() >int(adminSettings[6])/10) 
+        {
+          hashtags.remove(0);
+        } // keeps aray to a finite length by dropping off first element as new one is added 
+       
           }
           println ("hashtagArray["+k+"]= "+hashtagArray[1]);
         }
@@ -452,6 +462,7 @@ println ("cleanTweets = "+cleanTweets);
   } 
   cleanTweets.clear();
   tweetster.clear();
+  
 } // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< end grabTweets() <<<<<<<<
 
 // >>>>>>>>>>>>>>>>>>>
@@ -598,6 +609,14 @@ void updateDisplayVariables() {
     displayUserName="";
   }
   readingSettingText = "Currently reading the hive mind for "+queryType+"= "+ queryString;
+    color c1 = color(70, 130, 180);
+  fill (c1);
+  rect(columnPos2_X, boxY-60, width, 60);
+    fill(0, 0, 0, 255);
+    textSize(20);
+    text(readingSettingText, columnPos2_X, boxY-30);
+    
+  
   //displayHashtag+displayUserName+displaySearchTerms;
 }
 
@@ -629,20 +648,7 @@ void buildAdminPanel() {
   // @@@ 
 
 
-  tfAlert = cp5.addTextlabel("please wait");
-  tfAlert.setPosition(columnPos2_X, boxY-60 );
-  tfAlert.setSize(boxWidth, boxHeight);
-  tfAlert.setFont(font);
-
-  //tf.setAutoClear(true);
-  tfAlert.setColor(color(255, 255, 255));
-  tfAlert.getCaptionLabel().align(ControlP5.CENTER, ControlP5.CENTER);
-
-  tfAlert.setText (readingSettingText);
-
-  //tfAlert.setVisible(false) 
-  tfAlert.captionLabel().setControlFont(font);
-
+  
   // create a new button with name 'Tell my Fortune'
   b = cp5.addButton("Press to tell your fortune", 20, 100, 50, 80, 20);
   b.setId(2);  // id to target this element
