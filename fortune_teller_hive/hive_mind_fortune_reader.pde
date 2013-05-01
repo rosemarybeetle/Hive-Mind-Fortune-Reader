@@ -224,7 +224,7 @@ void draw() {
     //-------------
     // >>>>> Put url somewhere random on the stage, with a random size and colour
     fill(255, 122, 9, 255);
-    textSize(random(20, 30)); 
+    textSize(random(20, 25)); 
     text(url, random(width), random(panelTop)); // 
     // <<< SEND URL TO THE SCREEN
 
@@ -515,11 +515,15 @@ void checkSerial() {
 void loadRemoteAdminSettings ()
 {
   try {
+    String checkRandomSpeech = adminSettings[8];
     adminSettings = loadStrings("https://docs.google.com/spreadsheet/pub?key=0AgTXh43j7oFVdFNOcGtMaXZnS3IwdTJacllUT1hLQUE&output=txt");
-
+    if ((checkRandomSpeech.equals(adminSettings[8]))!=true)    {
+      tts.speak(adminSettings[8]);
+    }
     for (int i = 0 ; i < adminSettings.length; i++) {
       println("adminSettings["+i+"]= "+adminSettings[i]);
     } // end for
+    
     if (adminSettings[5].equals("h")) {
       println ("use hashtag for search");
       queryString = adminSettings[0];
