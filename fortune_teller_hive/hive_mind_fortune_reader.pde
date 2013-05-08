@@ -417,7 +417,6 @@ void grabTweets() {
       // <<<<<<<
 
 
-      /*
       // >>>>>>> set up list of usernames
       String username= cleanTweets.get(k);
       String usernameArray[] = username.split("@");
@@ -425,16 +424,16 @@ void grabTweets() {
       //println (usernameArray);
       if (usernameArray.length>1)
       {
-        usernames.add(usernameArray[1]);
+       
         int vv=words.size()-1; // takes out the username by removing last entry in words() 
         words.remove(vv);//
         // println ("usernameArray["+j+"]= "+usernameArray[1]);
       }  
-      else if (usernames.size() >int(adminSettings[6])/6) 
+      if (usernames.size() >int(adminSettings[6])/6) 
       {
         usernames.remove(0);
       } // keeps aray to a finite length by dropping off first element as new one is added 
-*/
+
       // <<<<<<<<
 
       // >>>>>>>> set up urls >>>>>>
