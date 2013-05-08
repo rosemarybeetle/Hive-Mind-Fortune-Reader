@@ -38,7 +38,7 @@ boolean loadstopWordsCheckInt=true;
 //  >>>>> fortune textxs - make these external later #enhancement
 int tweetTextOutro = int (random(99));
 String tweetSendTrigger ="fireTweet";
-String fortuneGreeting = "Hello. I have stared deep. into the hive mind. Your fortune reading is."; 
+String fortuneGreeting = "I have stared deep into the hive mind. "; 
 String fortune = "";
 String fortuneSpoken = "";
 int widthRandomiser = 120;
@@ -358,6 +358,7 @@ void grabTweets() {
     for (int i = 0; i < tweetster.size(); i++) {
       Tweet t = (Tweet) tweetster.get(i); 
       String user = t.getFromUser();
+      usernames.add(user);
       String msg = t.getText();
       Date d = t.getCreatedAt();
       println("Tweet #"+i+" by " + user + " at " + d + ": " + msg);
@@ -415,6 +416,8 @@ void grabTweets() {
       }
       // <<<<<<<
 
+
+      /*
       // >>>>>>> set up list of usernames
       String username= cleanTweets.get(k);
       String usernameArray[] = username.split("@");
@@ -431,7 +434,7 @@ void grabTweets() {
       {
         usernames.remove(0);
       } // keeps aray to a finite length by dropping off first element as new one is added 
-
+*/
       // <<<<<<<<
 
       // >>>>>>>> set up urls >>>>>>
@@ -467,7 +470,8 @@ void grabTweets() {
     {
       uberWords  = append (uberWords, words.get(p).toString());
     }
-
+ uberWords  = append (uberWords, "WORDS UPDATE REFRESH COMPLETED");
+  uberWords  = append (uberWords, " ");
     saveStrings ("words-"+stamp+".txt", uberWords);
   } // <<<<<< end try 
 
@@ -711,7 +715,17 @@ void buildAdminPanel() {
 
 void readFortune (String tweetText)
 {
+  int picW1 = int(random (words.size()));
+  String fortuneWord1= words.get(picW1);
+  int picW2 = int(random (words.size()));
+  String fortuneWord2= words.get(picW2);
+  int hash = int(random (hashtags.size()));
+  String fortuneHash= hashtags.get(hash);
+  int urler = int(random (urls.size()));
+   String fortuneUrl= urls.get(urler);
+     int userer = int(random (usernames.size()));
+   String fortuneUser = usernames.get(userer);
 
-  fortune = "@"+tfUserCurrent + " from "+tweetText+ ", " +tfTextCurrent+". "+tweetTextOutro;
-  fortuneSpoken = (fortuneGreeting + tfUserCurrent+ "How. do. you. feel about. "+fortune);
+  fortune = "Psychic summary for @"+tfUserCurrent + ". for: "+queryString+". "+ fortuneWord1+", "+ fortuneWord2+", "+fortuneHash+ ", "+fortuneUser+", "+fortuneUrl+". Enjoy/RT";
+  fortuneSpoken = "Hello. "+tfUserCurrent+". "+adminSettings[7]+  ". "+fortuneGreeting +". Here. you are. Your Psychic. Hive. Mind. Reading. for. "+queryString+". is. "+ fortuneWord1+". AND. "+ fortuneWord2+", MIGHT. MEAN. you. need. to think. about. "+fortuneHash+ ". Also. SEEK OUT. "+fortuneUser;
 }
