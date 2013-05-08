@@ -66,6 +66,11 @@ ArrayList tweetster = new ArrayList();
 String uberWords [] = new String[0]; //massive array to build up history of words harvested
 String queryString = ""; // 
 String queryType = ""; //
+ArrayList<String> fortFrags1 = new ArrayList();
+ArrayList<String> fortFrags2 = new ArrayList();
+ArrayList<String> fortFrags3 = new ArrayList();
+ArrayList<String> fortFrags4 = new ArrayList();
+
 // <<<<<<
 String adminSettings [] = {
   "#hivemind", "@rosemarybeetle", "weird", "100", "50000", "h", "500", "Psychic Hive-Mind Fortune Reader", "Greetings Master. I am a-woken"
@@ -554,8 +559,30 @@ void loadRemoteAdminSettings ()
       queryType = "search term";
     }
     updateDisplayVariables();
+    // now load load fortune fragments
+ String frag1 []= loadStrings ("https://docs.google.com/spreadsheet/pub?key=0AgTXh43j7oFVdDQ3cUZ5Y2RMTm9RSXNrdElZTjN5R1E&output=txt");
+ for (int ff1=0; ff1<frag1.length; ff1++)
+ {fortFrags1.add(frag1[ff1]);
+ println ("Fortune Frag1 = "+fortFrags1.get(ff1));
+ }
+ String frag2 []= loadStrings ("https://docs.google.com/spreadsheet/pub?key=0AgTXh43j7oFVdGFQLTFhMUVqTTlkTjlRVUN4c3JtOGc&output=txt");
+ for (int ff2=0; ff2<frag2.length; ff2++)
+ {fortFrags2.add(frag2[ff2]);
+ println ("Fortune Frag2 = "+frag2[ff2]);
+  println ("Fortune Frag1 = "+fortFrags2.get(ff2));
 
-    // end if
+ }
+ String frag3 []= loadStrings ("https://docs.google.com/spreadsheet/pub?key=0AgTXh43j7oFVdFE0Qm1yYmhyYWJETVJsSHJIOGFMQ3c&output=txt");
+ for (int ff3=0; ff3<frag3.length; ff3++)
+ {fortFrags3.add(frag3[ff3]);
+ println ("Fortune Frag3 = "+frag3[ff3]);
+ }
+ String frag4 []= loadStrings ("https://docs.google.com/spreadsheet/pub?key=0AgTXh43j7oFVdG9KTnhLS2Zvbk5HNXp2RmRpeUZtTUE&output=txt");
+ for (int ff4=0; ff4<frag4.length; ff4++)
+ {fortFrags4.add(frag4[ff4]);
+ println ("Fortune Frag4 = "+frag4[ff4]);
+ }
+ // end if
   }
   catch (Exception e) {
     println ("no CONNECTION");
@@ -724,7 +751,36 @@ void readFortune (String tweetText)
    String fortuneUrl= urls.get(urler);
      int userer = int(random (usernames.size()));
    String fortuneUser = usernames.get(userer);
+  
+  int frag1Int =int (random (fortFrags1.size()));
+  String fraglet1 = fortFrags1.get(frag1Int);
+   int frag2Int =int (random (fortFrags2.size()));
+  String fraglet2 = fortFrags2.get(frag2Int);
+  int frag3Int =int (random (fortFrags3.size()));
+  String fraglet3 = fortFrags3.get(frag3Int);
+  int frag4Int =int (random (fortFrags4.size()));
+   String fraglet4 = fortFrags4.get(frag4Int);
+   fortune = "Psychic summary for @"+tfUserCurrent + ". for: "+queryString+". "+ fortuneWord1+", "+ fortuneWord2+", #"+fortuneHash+ ", @"+fortuneUser+", "+fortuneUrl+". Enjoy/RT";
+  println ("just before fortune spoken");
+  fortuneSpoken = "Hello. "+tfUserCurrent+". "+adminSettings[7]+  ". "+fortuneGreeting +". Here. you are. Your Psychic. Hive. Mind. Fortune.  based on reading the collective mind of. "+queryString+". is. "+fraglet1+". "+ fortuneWord1+". "+ fraglet2+". "+fortuneWord2+". "+fraglet3+". hash-"+fortuneHash+ ". "+fraglet4+" at."+fortuneUser;
+println ("fortuneSpoken= "+fortuneSpoken);
+}
+
+/*
+void readFortune (String tweetText)
+{
+  int picW1 = int(random (words.size()));
+  String fortuneWord1= words.get(picW1);
+  int picW2 = int(random (words.size()));
+  String fortuneWord2= words.get(picW2);
+  int hash = int(random (hashtags.size()));
+  String fortuneHash= hashtags.get(hash);
+  int urler = int(random (urls.size()));
+   String fortuneUrl= urls.get(urler);
+     int userer = int(random (usernames.size()));
+   String fortuneUser = usernames.get(userer);
 
   fortune = "Psychic summary for @"+tfUserCurrent + ". for: "+queryString+". "+ fortuneWord1+", "+ fortuneWord2+", "+fortuneHash+ ", "+fortuneUser+", "+fortuneUrl+". Enjoy/RT";
   fortuneSpoken = "Hello. "+tfUserCurrent+". "+adminSettings[7]+  ". "+fortuneGreeting +". Here. you are. Your Psychic. Hive. Mind. Reading. for. "+queryString+". is. "+ fortuneWord1+". AND. "+ fortuneWord2+", MIGHT. MEAN. you. need. to think. about. "+fortuneHash+ ". Also. SEEK OUT. "+fortuneUser;
 }
+*/
