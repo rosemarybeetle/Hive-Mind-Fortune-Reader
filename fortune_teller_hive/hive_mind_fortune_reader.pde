@@ -183,7 +183,7 @@ void setup() {
 void draw() {
   int panelTop= height-panelHeight;
   buttonCheck("HELLO"); // on screen check button every loop
- 
+
   timeNow=millis();
   /*println (" "+timeNow);
    println ();
@@ -263,7 +263,7 @@ void draw() {
     // following is for text boxes background. 
     tfUserCurrent=tf.getText() ; //check the text box content every loop
     println ("tfUserCurrent= "+tfUserCurrent);
-     }
+  }
   catch (Exception e) {
   }
   finally 
@@ -274,7 +274,7 @@ void draw() {
 }
 // >>>>>>>>>>>>>>>>>>>>>>>> SEND THAT TWEET >>>>>>>>>>>>>>>
 void sendTweet (String tweetText) {
-      
+
   if ((tfUserCurrent.equals(""))!=true) {
     updateDisplayVariables();
     //@@@
@@ -371,6 +371,8 @@ void grabTweets() {
       //Break the tweet into words
       String[] input = msg.split(" ");
       for (int j = 0;  j < input.length; j++) {
+
+
         cleanTweets.add(input[j]);
 
         for (int ii = 0 ; ii < stopWords.size(); ii++) {
@@ -385,86 +387,88 @@ void grabTweets() {
     println ("cleanTweets = "+cleanTweets);
 
     for (int k = 0;  k < cleanTweets.size(); k++) {
-      words.add(cleanTweets.get(k));
-      if (words.size() >int(adminSettings[6])) 
-      {
-        words.remove(0);
-      } // keeps aray to a finite length by dropping off first element as new one is added 
-      /*if (loadSettingsFirstLoadFlag==false)
-       {
-       if (words.size() >1) {words.remove(0);
-       }
-       }
-       */
-
-      // >>>>>> make the list of hashtags
-      String hashtag= cleanTweets.get(k);
-
-      String hashtagArray[] = hashtag.split("#");
-      if (hashtagArray.length>1)
-      {
-        //println ("inside checker");
-        hashtags.add(hashtagArray[1]);
-        int v=words.size()-1;
-        words.remove(v);
-        if (queryType.equals("hashtag"))
+      if ((cleanTweets.get(k).equals(queryString))!= true)
+      { 
+        println ("(cleanTweets.get(k) <"+cleanTweets.get(k)+".equals(queryString))"+queryString+"!= true");
+        words.add(cleanTweets.get(k));
+        if (words.size() >int(adminSettings[6])) 
         {
-          if (hashtagArray[1].equals("#"+queryString)) {
-            hashtags.remove(hashtagArray[1]);
-          } 
-          else if (hashtags.size() >int(adminSettings[6])/10) 
+          words.remove(0);
+        } // keeps aray to a finite length by dropping off first element as new one is added 
+        /*if (loadSettingsFirstLoadFlag==false)
+         {
+         if (words.size() >1) {words.remove(0);
+         }
+         }
+         */
+
+        // >>>>>> make the list of hashtags
+        String hashtag= cleanTweets.get(k);
+
+        String hashtagArray[] = hashtag.split("#");
+        if (hashtagArray.length>1)
+        {
+          //println ("inside checker");
+          hashtags.add(hashtagArray[1]);
+          int v=words.size()-1;
+          words.remove(v);
+          if (queryType.equals("hashtag"))
           {
-            hashtags.remove(0);
-          } // keeps aray to a finite length by dropping off first element as new one is added
+            if (hashtagArray[1].equals("#"+queryString)) {
+              hashtags.remove(hashtagArray[1]);
+            } 
+            else if (hashtags.size() >int(adminSettings[6])/10) 
+            {
+              hashtags.remove(0);
+            } // keeps aray to a finite length by dropping off first element as new one is added
+          }
+          println ("hashtagArray["+k+"]= "+hashtagArray[1]);
         }
-        println ("hashtagArray["+k+"]= "+hashtagArray[1]);
-      }
-      // <<<<<<<
+        // <<<<<<<
 
 
-      // >>>>>>> set up list of usernames
-      String username= cleanTweets.get(k);
-      String usernameArray[] = username.split("@");
-      // println ("usernameArray = ");
-      //println (usernameArray);
-      if (usernameArray.length>1)
-      {
-       
-        int vv=words.size()-1; // takes out the username by removing last entry in words() 
-        words.remove(vv);//
-        // println ("usernameArray["+j+"]= "+usernameArray[1]);
-      }  
-      if (usernames.size() >int(adminSettings[6])/6) 
-      {
-        usernames.remove(0);
-      } // keeps aray to a finite length by dropping off first element as new one is added 
-
-      // <<<<<<<<
-
-      // >>>>>>>> set up urls >>>>>>
-      String url = cleanTweets.get(k);
-      String urlArray[] = url.split("h");
-      if (urlArray.length>1)
-      {
-        String urlArray2[] = urlArray[1].split("t");
-        if (urlArray2.length>2)
+        // >>>>>>> set up list of usernames
+        String username= cleanTweets.get(k);
+        String usernameArray[] = username.split("@");
+        // println ("usernameArray = ");
+        //println (usernameArray);
+        if (usernameArray.length>1)
         {
-          urls.add(url);
-          int vvv=words.size()-1;
-          words.remove(vvv);
-        } 
-        else  if (urls.size() >int(adminSettings[6])/6) 
+
+          int vv=words.size()-1; // takes out the username by removing last entry in words() 
+          words.remove(vv);//
+          // println ("usernameArray["+j+"]= "+usernameArray[1]);
+        }  
+        if (usernames.size() >int(adminSettings[6])/6) 
         {
-          urls.remove(0);
+          usernames.remove(0);
         } // keeps aray to a finite length by dropping off first element as new one is added 
 
-        // <<<<<<<<<< end
+        // <<<<<<<<
 
-        // >>>>>>>>>>
-      }
-    };
+        // >>>>>>>> set up urls >>>>>>
+        String url = cleanTweets.get(k);
+        String urlArray[] = url.split("h");
+        if (urlArray.length>1)
+        {
+          String urlArray2[] = urlArray[1].split("t");
+          if (urlArray2.length>2)
+          {
+            urls.add(url);
+            int vvv=words.size()-1;
+            words.remove(vvv);
+          } 
+          else  if (urls.size() >int(adminSettings[6])/6) 
+          {
+            urls.remove(0);
+          } // keeps aray to a finite length by dropping off first element as new one is added 
 
+          // <<<<<<<<<< end
 
+          // >>>>>>>>>>
+        }
+      };
+    }
 
     println ("WORDS.SIZE () = "+words.size());
     println ("words = "+words);
@@ -474,8 +478,8 @@ void grabTweets() {
     {
       uberWords  = append (uberWords, words.get(p).toString());
     }
- uberWords  = append (uberWords, "WORDS UPDATE REFRESH COMPLETED");
-  uberWords  = append (uberWords, " ");
+    uberWords  = append (uberWords, "WORDS UPDATE REFRESH COMPLETED");
+    uberWords  = append (uberWords, " ");
     saveStrings ("words-"+stamp+".txt", uberWords);
   } // <<<<<< end try 
 
@@ -560,29 +564,32 @@ void loadRemoteAdminSettings ()
     }
     updateDisplayVariables();
     // now load load fortune fragments
- String frag1 []= loadStrings ("https://docs.google.com/spreadsheet/pub?key=0AgTXh43j7oFVdDQ3cUZ5Y2RMTm9RSXNrdElZTjN5R1E&output=txt");
- for (int ff1=0; ff1<frag1.length; ff1++)
- {fortFrags1.add(frag1[ff1]);
- println ("Fortune Frag1 = "+fortFrags1.get(ff1));
- }
- String frag2 []= loadStrings ("https://docs.google.com/spreadsheet/pub?key=0AgTXh43j7oFVdGFQLTFhMUVqTTlkTjlRVUN4c3JtOGc&output=txt");
- for (int ff2=0; ff2<frag2.length; ff2++)
- {fortFrags2.add(frag2[ff2]);
- println ("Fortune Frag2 = "+frag2[ff2]);
-  println ("Fortune Frag1 = "+fortFrags2.get(ff2));
-
- }
- String frag3 []= loadStrings ("https://docs.google.com/spreadsheet/pub?key=0AgTXh43j7oFVdFE0Qm1yYmhyYWJETVJsSHJIOGFMQ3c&output=txt");
- for (int ff3=0; ff3<frag3.length; ff3++)
- {fortFrags3.add(frag3[ff3]);
- println ("Fortune Frag3 = "+frag3[ff3]);
- }
- String frag4 []= loadStrings ("https://docs.google.com/spreadsheet/pub?key=0AgTXh43j7oFVdG9KTnhLS2Zvbk5HNXp2RmRpeUZtTUE&output=txt");
- for (int ff4=0; ff4<frag4.length; ff4++)
- {fortFrags4.add(frag4[ff4]);
- println ("Fortune Frag4 = "+frag4[ff4]);
- }
- // end if
+    String frag1 []= loadStrings ("https://docs.google.com/spreadsheet/pub?key=0AgTXh43j7oFVdDQ3cUZ5Y2RMTm9RSXNrdElZTjN5R1E&output=txt");
+    for (int ff1=0; ff1<frag1.length; ff1++)
+    {
+      fortFrags1.add(frag1[ff1]);
+      println ("Fortune Frag1 = "+fortFrags1.get(ff1));
+    }
+    String frag2 []= loadStrings ("https://docs.google.com/spreadsheet/pub?key=0AgTXh43j7oFVdGFQLTFhMUVqTTlkTjlRVUN4c3JtOGc&output=txt");
+    for (int ff2=0; ff2<frag2.length; ff2++)
+    {
+      fortFrags2.add(frag2[ff2]);
+      println ("Fortune Frag2 = "+frag2[ff2]);
+      println ("Fortune Frag1 = "+fortFrags2.get(ff2));
+    }
+    String frag3 []= loadStrings ("https://docs.google.com/spreadsheet/pub?key=0AgTXh43j7oFVdFE0Qm1yYmhyYWJETVJsSHJIOGFMQ3c&output=txt");
+    for (int ff3=0; ff3<frag3.length; ff3++)
+    {
+      fortFrags3.add(frag3[ff3]);
+      println ("Fortune Frag3 = "+frag3[ff3]);
+    }
+    String frag4 []= loadStrings ("https://docs.google.com/spreadsheet/pub?key=0AgTXh43j7oFVdG9KTnhLS2Zvbk5HNXp2RmRpeUZtTUE&output=txt");
+    for (int ff4=0; ff4<frag4.length; ff4++)
+    {
+      fortFrags4.add(frag4[ff4]);
+      println ("Fortune Frag4 = "+frag4[ff4]);
+    }
+    // end if
   }
   catch (Exception e) {
     println ("no CONNECTION");
@@ -617,7 +624,7 @@ void keyReleased() {
     //tfToggleFocus(valFocus);
   } 
   else if  ((key == ENTER )|(key == RETURN)) {
-    
+
     sendTweet("pressed return");
   }
 }
@@ -748,39 +755,39 @@ void readFortune (String tweetText)
   int hash = int(random (hashtags.size()));
   String fortuneHash= hashtags.get(hash);
   int urler = int(random (urls.size()));
-   String fortuneUrl= urls.get(urler);
-     int userer = int(random (usernames.size()));
-   String fortuneUser = usernames.get(userer);
-  
+  String fortuneUrl= urls.get(urler);
+  int userer = int(random (usernames.size()));
+  String fortuneUser = usernames.get(userer);
+
   int frag1Int =int (random (fortFrags1.size()));
   String fraglet1 = fortFrags1.get(frag1Int);
-   int frag2Int =int (random (fortFrags2.size()));
+  int frag2Int =int (random (fortFrags2.size()));
   String fraglet2 = fortFrags2.get(frag2Int);
   int frag3Int =int (random (fortFrags3.size()));
   String fraglet3 = fortFrags3.get(frag3Int);
   int frag4Int =int (random (fortFrags4.size()));
-   String fraglet4 = fortFrags4.get(frag4Int);
-   fortune = "Psychic summary for @"+tfUserCurrent + ". for: "+queryString+". "+ fortuneWord1+", "+ fortuneWord2+", #"+fortuneHash+ ", @"+fortuneUser+", "+fortuneUrl+". Enjoy/RT";
+  String fraglet4 = fortFrags4.get(frag4Int);
+  fortune = "Psychic summary for @"+tfUserCurrent + ". for: "+queryString+". "+ fortuneWord1+", "+ fortuneWord2+", #"+fortuneHash+ ", @"+fortuneUser+", "+fortuneUrl+". Enjoy/RT";
   println ("just before fortune spoken");
-  fortuneSpoken = "Hello. "+tfUserCurrent+". "+adminSettings[7]+  ". "+fortuneGreeting +". Here. you are. Your Psychic. Hive. Mind. Fortune.  based on reading the collective mind of. "+queryString+". is. "+fraglet1+". "+ fortuneWord1+". "+ fraglet2+". "+fortuneWord2+". "+fraglet3+". hash-"+fortuneHash+ ". "+fraglet4+" at."+fortuneUser;
-println ("fortuneSpoken= "+fortuneSpoken);
+  fortuneSpoken = "Hello. "+tfUserCurrent+". "+adminSettings[7]+  ". "+fortuneGreeting +". Here. you are. Your Psychic Hive Mind. Fortune.  based on reading .the collective mind of. "+queryString+". is. "+fraglet1+". "+ fortuneWord1+". "+ fraglet2+". "+fortuneWord2+". "+fraglet3+". hashtag."+fortuneHash+ ". "+fraglet4+". Twitter user."+fortuneUser+". Thank you. I have tweeted a psychic summary of this reading to your twitter account. Moove along now. " ;
+  println ("fortuneSpoken= "+fortuneSpoken);
 }
 
 /*
 void readFortune (String tweetText)
-{
-  int picW1 = int(random (words.size()));
-  String fortuneWord1= words.get(picW1);
-  int picW2 = int(random (words.size()));
-  String fortuneWord2= words.get(picW2);
-  int hash = int(random (hashtags.size()));
-  String fortuneHash= hashtags.get(hash);
-  int urler = int(random (urls.size()));
-   String fortuneUrl= urls.get(urler);
-     int userer = int(random (usernames.size()));
-   String fortuneUser = usernames.get(userer);
-
-  fortune = "Psychic summary for @"+tfUserCurrent + ". for: "+queryString+". "+ fortuneWord1+", "+ fortuneWord2+", "+fortuneHash+ ", "+fortuneUser+", "+fortuneUrl+". Enjoy/RT";
-  fortuneSpoken = "Hello. "+tfUserCurrent+". "+adminSettings[7]+  ". "+fortuneGreeting +". Here. you are. Your Psychic. Hive. Mind. Reading. for. "+queryString+". is. "+ fortuneWord1+". AND. "+ fortuneWord2+", MIGHT. MEAN. you. need. to think. about. "+fortuneHash+ ". Also. SEEK OUT. "+fortuneUser;
-}
-*/
+ {
+ int picW1 = int(random (words.size()));
+ String fortuneWord1= words.get(picW1);
+ int picW2 = int(random (words.size()));
+ String fortuneWord2= words.get(picW2);
+ int hash = int(random (hashtags.size()));
+ String fortuneHash= hashtags.get(hash);
+ int urler = int(random (urls.size()));
+ String fortuneUrl= urls.get(urler);
+ int userer = int(random (usernames.size()));
+ String fortuneUser = usernames.get(userer);
+ 
+ fortune = "Psychic summary for @"+tfUserCurrent + ". for: "+queryString+". "+ fortuneWord1+", "+ fortuneWord2+", "+fortuneHash+ ", "+fortuneUser+", "+fortuneUrl+". Enjoy/RT";
+ fortuneSpoken = "Hello. "+tfUserCurrent+". "+adminSettings[7]+  ". "+fortuneGreeting +". Here. you are. Your Psychic. Hive. Mind. Reading. for. "+queryString+". is. "+ fortuneWord1+". AND. "+ fortuneWord2+", MIGHT. MEAN. you. need. to think. about. "+fortuneHash+ ". Also. SEEK OUT. "+fortuneUser;
+ }
+ */
