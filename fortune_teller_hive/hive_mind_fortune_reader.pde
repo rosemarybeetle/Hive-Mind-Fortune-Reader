@@ -767,7 +767,7 @@ void readFortune (String tweetText)
   String fraglet3 = fortFrags3.get(frag3Int);
   int frag4Int =int (random (fortFrags4.size()));
   String fraglet4 = fortFrags4.get(frag4Int);
-  fortune = "Psychic summary for @"+tfUserCurrent + ". for: "+queryString+". "+ fortuneWord1+", "+ fortuneWord2+", #"+fortuneHash+ ", @"+fortuneUser+", "+fortuneUrl+". Enjoy/RT";
+  fortune = "Psychic summary for @"+tfUserCurrent + ". for: #"+queryString+". "+ fortuneWord1+", "+ fortuneWord2+", #"+fortuneHash+ ", @"+fortuneUser+", "+fortuneUrl+". Enjoy/RT";
   println ("just before fortune spoken");
   fortuneSpoken = "Hello. "+tfUserCurrent+". "+adminSettings[7]+  ". "+fortuneGreeting +". Here. you are. Your Psychic Hive Mind. Fortune.  based on reading .the collective mind of. "+queryString+". is. "+fraglet1+". "+ fortuneWord1+". "+ fraglet2+". "+fortuneWord2+". "+fraglet3+". hashtag."+fortuneHash+ ". "+fraglet4+". Twitter user."+fortuneUser+". Thank you. I have tweeted a psychic summary of this reading to your twitter account. Moove along now. " ;
   println ("fortuneSpoken= "+fortuneSpoken);
