@@ -337,37 +337,56 @@ void grabTweets() {
   loadRemoteAdminSettings();
   // reGrabTweets=false; // reset the flag
   //Credentials
-  ConfigurationBuilder cb = new ConfigurationBuilder();
-  cb.setOAuthConsumerKey("twitOAuthConsumerKey");
-  cb.setOAuthConsumerSecret("twitOAuthConsumerSecret");
-  cb.setOAuthAccessToken("twitOAuthAccessToken");
-  cb.setOAuthAccessTokenSecret("twitOAuthAccessTokenSecret");
+  ConfigurationBuilder cbTest = new ConfigurationBuilder();
+  // ------- NB - the variables twitOAuthConsumerKey, etc. need to be in a 
+  // seperate 
+  cbTest.setOAuthConsumerKey(twitOAuthConsumerKey);
+  cbTest.setOAuthConsumerSecret(twitOAuthConsumerSecret);
+  cbTest.setOAuthAccessToken(twitOAuthAccessToken);
+  cbTest.setOAuthAccessTokenSecret(twitOAuthAccessTokenSecret);
 
-  //Make the twitter object and prepare the query
-  Twitter twitter = new TwitterFactory(cb.build()).getInstance();
-  try { /// TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
-    // these IF statements are testing to see the search mode [h,u,s]
-
+  Twitter twitterTest = new TwitterFactory(cbTest.build()).getInstance();
+/*try {
+    Status status = twittertEST.updateStatus("test send to @rbeetlelabs"+int(random(5000)));
+    println("Successfully tweeted the message: " + "test send to @rbeetlelabs"+int(random(5000)));
+    } 
+  catch(TwitterException e) { 
+    println("TEST Send tweet: " + e + " Status code: " + e.getStatusCode());
+  } // end try
+  */
+  try { // 
     Query query = new Query(queryString); // this is default you check the first of 4 admin settings, but should be extended to include passing a selctor param
-    query.setRpp(int(adminSettings[3])); // rrp is the number of tweets returned per page
+    query.count(int(adminSettings[3])); // count is the number of tweets returned per page
     // The factory instance is re-useable and thread safe.
-
     //Try making the query request.
 
-    QueryResult result = twitter.search(query); // gets the query
+    QueryResult result = twitterTest.search(query); // gets the query
 
-      tweetster = (ArrayList) result.getTweets(); // creates an array to store tweets in
-    // then fills it up!
-
-    println ("number of  = "+tweetster.size()+" in tweets Arraylist()");
-    for (int i = 0; i < tweetster.size(); i++) {
-      Tweet t = (Tweet) tweetster.get(i); 
-      String user = t.getFromUser();
+      int ll=1;
+    for (Status status : result.getTweets()) {
+      String user = status.getUser().getScreenName();
       usernames.add(user);
-      String msg = t.getText();
-      Date d = t.getCreatedAt();
-      println("Tweet #"+i+" by " + user + " at " + d + ": " + msg);
+      String msg = status.getText();
+        println ("tweet #"+ll);
+        println("@" + user);
+       println("Text of tweet=" + status.getText());
+        println ("-----------");
+        ll++;
+   
+   
+    
+    
+    
 
+    
+   // for (int i = 0; i < tweetster.size(); i++) {
+     //Tweet t = (Tweet) tweetster.get(i); 
+      //String user = t.getFromUser();
+      //usernames.add(user);
+     // String msg = t.getText();
+      
+      //Date d = t.getCreatedAt();
+     
       //Break the tweet into words
       String[] input = msg.split(" ");
       for (int j = 0;  j < input.length; j++) {
@@ -481,13 +500,15 @@ void grabTweets() {
     uberWords  = append (uberWords, "WORDS UPDATE REFRESH COMPLETED");
     uberWords  = append (uberWords, " ");
     saveStrings ("words-"+stamp+".txt", uberWords);
-  } // <<<<<< end try 
+  
 
+ 
+} //end try ??
 
-  catch (Exception e)
-  {
-    println("no adminsettings from internet");
-  }
+ catch(TwitterException e)    {
+      println("TEST query tweet: " + e + " Status code: " + e.getStatusCode());
+    } // end try/catch
+    
   grabTime=millis(); // reset grabTime
   if (loadSettingsFirstLoadFlag==true)
   { 
@@ -623,7 +644,7 @@ void keyReleased() {
 
     //tfToggleFocus(valFocus);
   } 
-  else if  ((key == ENTER )|(key == RETURN)) {
+  else if  ((key==ENTER )|(key == RETURN)) {
 
     sendTweet("pressed return");
   }
@@ -791,3 +812,5 @@ void readFortune (String tweetText)
  fortuneSpoken = "Hello. "+tfUserCurrent+". "+adminSettings[7]+  ". "+fortuneGreeting +". Here. you are. Your Psychic. Hive. Mind. Reading. for. "+queryString+". is. "+ fortuneWord1+". AND. "+ fortuneWord2+", MIGHT. MEAN. you. need. to think. about. "+fortuneHash+ ". Also. SEEK OUT. "+fortuneUser;
  }
  */
+ 
+ 
