@@ -2,30 +2,33 @@
 // -----------------------
 // ----
 // Hive-Mind Fortune-Reader
+// version 9 
 // This sketch is the mind control of an automaton that can read the collective mind of twitter activity
 // And feed it back to a physical automaton to create fortune readings...
+
 //
-// This is based on code by  @@@ Jer Thorp @@@
-// From http://blog.blprnt.com/blog/blprnt/updated-quick-tutorial-processing-twitter
+// RESPECT to...
+//
+// JER THORP - Visualisation is based on his code example
+// see http://blog.blprnt.com/blog/blprnt/updated-quick-tutorial-processing-twitter
 // Awesome!
-// NOTE - you have to have thw twitter4j library installed in the libraries folder for this to work!
-// version 5 - trying to add GUI elements, based on 
-// controlP5 GUI Library by @@@ Andreas Schlegel @@@, 2012. sojamo.de
-// http://www.sojamo.de/libraries/controlP5/
+// 
+// The people behind twitter4j 
+// see https://github.com/yusuke/twitter4j/network
+// using here, version 3.03
+// NOTE - you have to have the twitter4j library installed in the libraries folder for this to work!
+// You need to register your app to get OAUTH keys for Twitter4j
+// You can put them in a separate tab in your sketch
+// 
+// Andreas Schlegel - controlP5 GUI Library 
+// see http://www.sojamo.de/libraries/controlP5/
 // For positioning see (also @@@ Andreas Schlegel @@@) - 
 // https://code.google.com/p/controlp5/source/browse/trunk/examples/controlP5button/controlP5button.pde?r=6
 // ----
+// Nikolaus Gradwohl for the GURU text to speech library for Processing
+// see http://www.local-guru.net/blog/pages/ttslib
 // -----------------------
 
-
-// define Twitter Developer keys (you need to register your app to get one of these
-// Obviously these four variables are not real Twitter strings ones
-// You need to register yor app on Twitter developer site, and get these keys.
-// You can put them in a separate tab in your sketch
-//String twitOAuthConsumerKey="xxxxxxxxxxxxxxx";
-//String twitOAuthConsumerSecret="yyyyyyyyyyyyyyyyyyyy";
-//String twitOAuthAccessToken="zzzzzzzzzzzzzzzzzzzzzzzz";
-//String twitOAuthAccessTokenSecret="wwwwwwwwwwwwwwwwwwwwwwwwww";
 // -----
 
 // >>>>>>
@@ -35,7 +38,7 @@ boolean loadSettingsFirstLoadFlag=true;
 boolean loadstopWordsCheckInt=true;
 // <<<<<< end load flags
 
-//  >>>>> fortune textxs - make these external later #enhancement
+//  >>>>> fortune variables initialisations
 int tweetTextOutro = int (random(99));
 String tweetSendTrigger ="fireTweet";
 String fortuneGreeting = "I have stared deep into the hive mind. "; 
@@ -44,7 +47,7 @@ String fortuneSpoken = "";
 int widthRandomiser = 120;
 // <<<<<<
 
-// >>>>>>
+// >>>>>> gui variables init...
 String tfUserCurrent =""; // used to check what is in the username text box
 String tfTextCurrent =""; // used to check what is in the free-text text box
 int valFocus = 0; // default
@@ -55,7 +58,7 @@ color focusColor = focusOffBackgroundColor;
 color clPanel = color(70, 130, 180);
 // <<<<<<
 
-// >>>>>> Build an ArrayList to hold all of the words that we get from the imported tweets
+// >>>>>> ArrayLists to hold all of the words that we get from the imported tweets
 ArrayList<String> stopWords = new ArrayList();
 ArrayList<String> cleanTweets = new ArrayList();
 ArrayList<String> words = new ArrayList(); 
@@ -64,6 +67,9 @@ ArrayList<String> usernames = new ArrayList();
 ArrayList<String> urls = new ArrayList();
 ArrayList tweetster = new ArrayList();
 String uberWords [] = new String[0]; //massive array to build up history of words harvested
+String uberHashtags [] = new String[0]; //massive array to build up history of hashtags harvested
+String uberUsers [] = new String[0]; //massive array to build up history of users harvested
+String uberUrls [] = new String[0]; //massive array to build up history of urls harvested
 String queryString = ""; // 
 String queryType = ""; //
 ArrayList<String> fortFrags1 = new ArrayList();
@@ -71,7 +77,7 @@ ArrayList<String> fortFrags2 = new ArrayList();
 ArrayList<String> fortFrags3 = new ArrayList();
 ArrayList<String> fortFrags4 = new ArrayList();
 
-// <<<<<<
+// <<<<<< Variables for admin and tweettexts - e.g Array for containing imported admin settings from Google spreadsheet (init with default settings)
 String adminSettings [] = {
   "#hivemind", "@rosemarybeetle", "weird", "100", "50000", "h", "500", "Psychic Hive-Mind Fortune Reader", "Greetings Master. I am a-woken"
 }; 
@@ -85,24 +91,19 @@ int boxWidth = 270;
 int boxHeight = 40;
 int columnPos2_X = 310;
 
-
-// admin panel height
-// <<<<<< fill with defaults in case remote settings don't load 
-
 // >>>>>>  grabTweets Timer settings  >>>>>>>>>>>
 float grabTime = millis();
 float timeNow = millis();
 String stamp = year()+"-"+month()+"-"+day()+"-"+hour()+"-"+minute();// <<<<<<
 
-// >>>>>> GUI library and settiongs
+// >>>>>> GUI library and settings
 import controlP5.*; // import the GUI library
-ControlP5 cp5; // creates a controller I think!
+ControlP5 cp5; // creates a controller (I think!)
 ControlFont font;
 controlP5.Button b;
 controlP5.Textfield tf;
 controlP5.Textlabel lb;
 // <<<<<<<
-
 
 // >>>>>>>  import GURU text-to-speech library
 import guru.ttslib.*; // NB this also needs to be loaded (available from http://www.local-guru.net/projects/lib/ttslib-0.3.zip)
@@ -124,44 +125,36 @@ float delayCheck; //delayCheck; // THIS IS IMPORTANT. it i what stops overpollin
 
 
 void setup() {
-  tts = new TTS();
+  tts = new TTS(); // create text to speech instance
   tts.speak(adminSettings[8]);// preloaded, not web
-  println (" adminSettings 1 " + adminSettings);
+  println (" adminSettings 1 " + adminSettings); // @@ DEBUG STUFF
   for (int i = 0 ; i < adminSettings.length; i++) {
-    println("adminSettings["+i+"]= "+adminSettings[i]);
+    println("adminSettings["+i+"]= "+adminSettings[i]); // @@ DEBUG STUFF
   }
   updateDisplayVariables();
   try {
     loadRemoteAdminSettings(); // loads Twitter search parameters from remote Google spreadsheet
     println ("adminSettings 2 "+adminSettings);
-    tts.speak("I am connected to the web. Master.Your commands have been loaded into my brain");
+    tts.speak("I am connected to the web. Master.Your commands have been loaded into my brain"); // @@ DEBUG STUFF - SPOKEN OUT. ONLY WORKS IF CONNECTION WORKS
   }  
   catch (Exception e) {
-    tts.speak("I am sorry. I am not able to connect to the web. Your commands have not been loaded into my brain master");
+    tts.speak("I am sorry. I am not able to connect to the web. Your commands have not been loaded into my brain master"); // @@ DEBUG STUFF
   }
   loadRemoteStopWords();// load list of stop words into an array, loaded from a remote spreadsheet
-  //Set the size of the stage, 
-  //size(550, 550); // TEST SETTING
-
+ 
   // >>>>>>> screen size and settings....
-  size(screen.width-border, screen.height-border);// USE THIS SETTING FOR EXPORTED APPLICATION IN FULLSCVREEN (PRESENT) MODE
+  size(screen.width-border, screen.height-border);// USE THIS SETTING FOR EXPORTED APPLICATION IN FULLSCREEN (PRESENT) MODE
   background(0); // SET BACKGROUND TO BLACK
   // <<<<<<<
 
   // >>>>> Make initial serial port connection handshake
-  println(Serial.list());// display communication ports (use this in test for available ports)
+  println(Serial.list());// // @@ DEBUG STUFF - display communication ports (use this in test for available ports)
   try { 
-    port = new Serial(this, Serial.list()[0], 115200);
+    port = new Serial(this, Serial.list()[0], 115200); // OPEN PORT TO ARDUINO
   } 
   catch (ArrayIndexOutOfBoundsException ae) {
     // if errors
-    println ("STOP - No PORT CONNECTION");
-    println ("STOP - No PORT CONNECTION");
-    println ("STOP - No PORT CONNECTION");
-    println ("STOP - No PORT CONNECTION");
-    println ("STOP - No PORT CONNECTION");
-    println ("STOP - No PORT CONNECTION");
-    println ("STOP - No PORT CONNECTION");
+    println ("-------------------------");
     println ("STOP - No PORT CONNECTION");
     println ("Exception = "+ae);  // print it
     println ("-------------------------");
@@ -171,8 +164,8 @@ void setup() {
   buildAdminPanel();
 
   smooth();
-  // Now call tweeting action functions...
-  grabTweets();
+  
+  grabTweets(); // Now call tweeting action functions...
 
   println ("finished grabbing tweets");
   println ();
@@ -185,12 +178,7 @@ void draw() {
   buttonCheck("HELLO"); // on screen check button every loop
 
   timeNow=millis();
-  /*println (" "+timeNow);
-   println ();
-   println ("grabTime = "+grabTime);
-   println ();
-   println ("timeNow-grabTime = "+(timeNow-grabTime));
-   */
+
   try {
     println ();
     if ((timeNow-grabTime)>float(adminSettings[4])) {
@@ -203,12 +191,10 @@ void draw() {
     // <<<<<<
 
     // >>>>>>> WORDS
-    // Draw a word from the list of words that we've built (using FRAMECOUNT - THIS INCREMENTS BY +1 EVERY REDRAW - %=MODULO)
-    //int i = (frameCount % words.size());
+    // Draw a word from the list of words that we've built
     int i = (int (random (words.size())));
     String word = words.get(i);
     println ("word = "+word+" #"+i);
-
     // <<<<<<<
 
     // >>>>>>> HASHTAGS
@@ -228,10 +214,7 @@ void draw() {
     int l = (int (random (urls.size())));
     String url = urls.get(l);
     // <<<<<<
-
-    // create a random fortune ---
-    // println ("testFortune= Think about: "+words.get(int(random(i)))+" or talk to "+usernames.get(int(random(k)))+" or visit "+urls.get(int(random(l)))+". Totally "+hashtags.get(int(random(j))));
-
+  
     //-------------
     // >>>>> Put url somewhere random on the stage, with a random size and colour
     fill(255, 255, 0, 255);
@@ -257,12 +240,10 @@ void draw() {
     text("@"+username, random(width)-widthRandomiser, random (panelTop));
     // <<< END SEND USERNAME
 
-
-    // --------------
     // --------------
     // following is for text boxes background. 
     tfUserCurrent=tf.getText() ; //check the text box content every loop
-    println ("tfUserCurrent= "+tfUserCurrent);
+    println ("tfUserCurrent= "+tfUserCurrent); // @@ DEBUG STUFF
   }
   catch (Exception e) {
   }
@@ -272,11 +253,13 @@ void draw() {
   }
   checkSerial() ; // check serial port every loop
 }
+
+
 // >>>>>>>>>>>>>>>>>>>>>>>> SEND THAT TWEET >>>>>>>>>>>>>>>
 void sendTweet (String tweetText) {
 
-  if ((tfUserCurrent.equals(""))!=true) {
-    updateDisplayVariables();
+  if ((tfUserCurrent.equals(""))!=true) { // THE BOX CAN'T BE EMPTY
+    updateDisplayVariables(); 
     //@@@
     timerT=millis();  // reset the timer each time
 
@@ -285,20 +268,19 @@ void sendTweet (String tweetText) {
       // this is needed to prevent sending multiple times rapidly to Twitter 
       // which will be frowned upon!
     {
-      delayCheck=millis();
+      delayCheck=millis(); // RESET A TIMER
 
-      println("tweet being sent");
-      println("tfUserCurrent = "+ tfUserCurrent);
-      tweetTextIntro = readingSettingText;
+      println("tweet being sent"); // @@ DEBUG STUFF
+      println("tfUserCurrent = "+ tfUserCurrent);  // @@ DEBUG STUFF
+      tweetTextIntro = readingSettingText; // INITIALISE THE INTRO TEXT VARIABLE...
       readFortune(tweetText);
       tts.speak(fortuneSpoken);
-      println("tweet Send actions complete over");
+      println("tweet Send actions complete over"); // @@ DEBUG STUFF
       println();
 
       //@@@
       ConfigurationBuilder cb2 = new ConfigurationBuilder();
-      // ------- NB - the variables twitOAuthConsumerKey, etc. need to be in a 
-      // seperate 
+      // ------- NB - the variables twitOAuthConsumerKey, are in a seperate tab
       cb2.setOAuthConsumerKey(twitOAuthConsumerKey);
       cb2.setOAuthConsumerSecret(twitOAuthConsumerSecret);
       cb2.setOAuthAccessToken(twitOAuthAccessToken);
@@ -308,7 +290,7 @@ void sendTweet (String tweetText) {
 
       try {
         Status status = twitter2.updateStatus(fortune);
-        println("Successfully tweeted the message: "+fortune + " to user: [@" + status.getText() + "].");
+        println("Successfully tweeted the message: "+fortune + " to user: [@" + status.getText() + "].");  // @@ DEBUG STUFF
         delayCheck=millis();
       } 
       catch(TwitterException e) { 
@@ -318,7 +300,7 @@ void sendTweet (String tweetText) {
     }
   }
   else {
-    tts.speak("You have not entered your Twitter user nayme. Sorry. I cannot reed your fortune. without thiss") ;
+    tts.speak("You have not entered your Twitter user nayme. Sorry. I cannot reed your fortune. without this") ; // THE BOX WAS EMPTY
   }
 }
 // <<<<<<<<<<<<<<<<<<<<<<<<< END SEND TWEETS <<<<<<<<<<<<<<<
@@ -333,72 +315,48 @@ void grabTweets() {
 
   fill(0, 25, 89, 255);
   textSize(70); 
-  text("Reading the collective mind...", (width/8)-120, (height/2)-50); // 
-  loadRemoteAdminSettings();
-  // reGrabTweets=false; // reset the flag
+  text("Reading the collective mind...", (width/8)-120, (height/2)-50); // THE ALERT FOR UPDATE CHECKING PAUSE
+  loadRemoteAdminSettings(); // GET THE LATEST ADMIN FROM GOOGLE SPREADSHEET
+ 
   //Credentials
   ConfigurationBuilder cbTest = new ConfigurationBuilder();
-  // ------- NB - the variables twitOAuthConsumerKey, etc. need to be in a 
-  // seperate 
+  // ------- NB - the variables twitOAuthConsumerKey, etc. ARE IN A SEPARATE SHEET 
   cbTest.setOAuthConsumerKey(twitOAuthConsumerKey);
   cbTest.setOAuthConsumerSecret(twitOAuthConsumerSecret);
   cbTest.setOAuthAccessToken(twitOAuthAccessToken);
   cbTest.setOAuthAccessTokenSecret(twitOAuthAccessTokenSecret);
 
   Twitter twitterTest = new TwitterFactory(cbTest.build()).getInstance();
-/*try {
-    Status status = twittertEST.updateStatus("test send to @rbeetlelabs"+int(random(5000)));
-    println("Successfully tweeted the message: " + "test send to @rbeetlelabs"+int(random(5000)));
-    } 
-  catch(TwitterException e) { 
-    println("TEST Send tweet: " + e + " Status code: " + e.getStatusCode());
-  } // end try
-  */
-  try { // 
+
+  try { // TRY ALLOWS ERROR HANDLING FOR EXCEPTIONS...
     Query query = new Query(queryString); // this is default you check the first of 4 admin settings, but should be extended to include passing a selctor param
     query.count(int(adminSettings[3])); // count is the number of tweets returned per page
-    // The factory instance is re-useable and thread safe.
-    //Try making the query request.
-
+  
     QueryResult result = twitterTest.search(query); // gets the query
 
-      int ll=1;
-    for (Status status : result.getTweets()) {
-      String user = status.getUser().getScreenName();
-      usernames.add(user);
-      String msg = status.getText();
-        println ("tweet #"+ll);
-        println("@" + user);
-       println("Text of tweet=" + status.getText());
+      int ll=1; // @@ DEBUG STUFF
+    for (Status status : result.getTweets()) { // EXTRACT THE TWEETS
+      String user = status.getUser().getScreenName();// GET THE TWITTER USERNAME
+      usernames.add(user); // ADD TO THE ARRAYLIST FOR USERNAMES
+      String msg = status.getText(); // EXTRACT THE TWEET TEXT
+        println ("tweet #"+ll); // @@ DEBUG STUFF
+        println("@" + user); // @@ DEBUG STUFF
+       println("Text of tweet=" + status.getText()); // @@ DEBUG STUFF
         println ("-----------");
-        ll++;
-   
-   
-    
-    
-    
-
-    
-   // for (int i = 0; i < tweetster.size(); i++) {
-     //Tweet t = (Tweet) tweetster.get(i); 
-      //String user = t.getFromUser();
-      //usernames.add(user);
-     // String msg = t.getText();
-      
-      //Date d = t.getCreatedAt();
-     
+        ll++; // @@ DEBUG STUFF (INCREMENT)
+        
       //Break the tweet into words
-      String[] input = msg.split(" ");
+      String[] input = msg.split(" "); // BREAK DOWN THE TWEET USING SPACES AS A DELIMITER
       for (int j = 0;  j < input.length; j++) {
 
 
-        cleanTweets.add(input[j]);
+        cleanTweets.add(input[j]); // CLEANTWEETS IS A STORE FOR TWEET WORDS WITH STOP WORDS REMOVED
 
         for (int ii = 0 ; ii < stopWords.size(); ii++) {
 
           if (stopWords.get(ii).equals(input[j])) {
-            cleanTweets.remove(input[j]);
-            println("Word removed due to matched stopword: "+input[j]);
+            cleanTweets.remove(input[j]); // THIS WORD IS A STOP WORD - REMOVE IT!
+            println("Word removed due to matched stopword: "+input[j]); // @@ DEBUG STUFF
           } // end if
         } //end for (ii++) //stopword c
       }// end clean this msg
@@ -414,12 +372,7 @@ void grabTweets() {
         {
           words.remove(0);
         } // keeps aray to a finite length by dropping off first element as new one is added 
-        /*if (loadSettingsFirstLoadFlag==false)
-         {
-         if (words.size() >1) {words.remove(0);
-         }
-         }
-         */
+        
 
         // >>>>>> make the list of hashtags
         String hashtag= cleanTweets.get(k);
@@ -492,7 +445,7 @@ void grabTweets() {
     println ("WORDS.SIZE () = "+words.size());
     println ("words = "+words);
     println ("@@@@@@@@@@@@@@@@@@@@@@@");
-
+    // >>>>>>> create text log file of words from pyschic scanning >>>>>>>>>
     for (int p =0;p<words.size(); p++)
     {
       uberWords  = append (uberWords, words.get(p).toString());
@@ -500,8 +453,34 @@ void grabTweets() {
     uberWords  = append (uberWords, "WORDS UPDATE REFRESH COMPLETED");
     uberWords  = append (uberWords, " ");
     saveStrings ("words-"+stamp+".txt", uberWords);
+    // <<<<<< end word text log file
+    
+    // >>>>>> create log file of users 
+    for (int jj =0;jj<usernames.size(); jj++)
+    {
+      uberUsers  = append (uberUsers, "@"+usernames.get(jj).toString());
+      
+    }
+    saveStrings ("users-"+stamp+".txt", uberUsers);
+    // <<<<<<<<< end user text log file
   
+// >>>>>> create log file of hashtags 
+    for (int jj =0;jj<usernames.size(); jj++)
+    {
+      uberHashtags  = append (uberHashtags, "#"+hashtags.get(jj).toString());
+      
+    }
+    saveStrings ("hashtags-"+stamp+".txt", uberHashtags);
+// <<<<<<<<< end hashtag text log file
 
+// >>>>>> create log file of urls 
+    for (int jj =0;jj<urls.size(); jj++)
+    {
+      uberUrls  = append (uberUrls, urls.get(jj).toString());
+      
+    }
+    saveStrings ("urls-"+stamp+".txt", uberUrls);
+// <<<<<<<<< end url text log file
  
 } //end try ??
 
