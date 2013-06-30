@@ -1,7 +1,6 @@
-
 // -----------------------
 // ----
-// Hive-Mind Fortune-Reader
+// Psychic Fortune Teller
 // version 9 
 // This sketch is the mind control of an automaton that can read the collective mind of twitter activity
 // And feed it back to a physical automaton to create fortune readings...
