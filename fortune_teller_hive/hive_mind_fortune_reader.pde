@@ -1,9 +1,18 @@
 // -----------------------
 // ----
-// Psychic Fortune Teller
-// version 9 
-// This sketch is the mind control of an automaton that can read the collective mind of twitter activity
-// And feed it back to a physical automaton to create fortune readings...
+// PSYCHIC FORTUNE TELLER
+// @rosemarybeetle 2013
+// http://makingweirdstuff.blogspot.com
+// version 9
+// 
+
+// 
+// This sketch is the mind control of Psychic Fortune Teller, an automaton that can read the collective mind of twitter
+// It has a Processing brain connected to a Twitter app, connecting via OAUTH
+// It harvests tweets from predefined searchs 
+// Deconstructs the weet content into words, hashtags, usernames and urls
+// Then uses these to create fortune readings, which it speaks using text-to-speeach
+// it also tweets a summary.
 
 //
 // RESPECT to...
